@@ -13,6 +13,15 @@
 %%
  /* DEFINE YOUR RULES STARTING HERE */
 
+ PROGRAM        {return PROGRAM;}
+ BEGIN          {return BEGIN;}
+ END            {return END;}
+ WRITE          {return WRITE;}
+ 
+ [A-Z][A-Z0-9]{1,8}     {return IDENT;}
+
+ 
+
 
 
 %%
