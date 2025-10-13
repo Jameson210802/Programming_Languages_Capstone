@@ -25,6 +25,12 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
 // TODO: Define and Implement structures to hold each data node
 // TODO: Overload << for Program
 
+struct Block {
+
+
+  //void print_tree(ostream& os,char* tree,bool status){}
+};
+
 struct Program 
 {
   string name; 
