@@ -60,6 +60,53 @@ Token expect(Token want, const char* msg)
 
 // TODO: implement parsing functions for each grammar in your language
 
+
+
+
+
+
+unique_ptr<Block> parseBlock()
+{
+
+  if(peek() != TOK_BEGIN)
+  {
+    throw runtime_error("Parse error: expected BEGIN");
+  }
+  expect(TOK_BEGIN,"Beginning of Block");
+
+  if(peek()!= WRITE)
+  {
+    throw runtime_error("Parse error: expected WRITE after BEGIN");
+  }
+
+  expect(WRITE,"string to print");
+
+ auto b =  unique_ptr<Block>();
+
+ b->write = parseWrite();
+
+
+ if(peek() != EOF)
+ {
+    throw runtime_error("Parse error: expected END to close block");
+ }
+
+ expect(EOF,"End of file");
+
+
+  // if(peek() != STRINGLIT)
+  // {
+  //   throw runtime_error("Parse error: expected WRITE after BEGIN");
+  // }
+
+  
+
+
+
+
+}
+
+
 // -----------------------------------------------------------------------------
 // Program → PROGRAM IDENT ';' Block EOF
 // -----------------------------------------------------------------------------

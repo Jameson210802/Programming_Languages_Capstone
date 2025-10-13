@@ -20,7 +20,7 @@
  
  [A-Z][A-Z0-9]{0,8}     {return IDENT;}
 
- \'[\'\\n][.]{1,80}\''   {return STRINGLIT;} // TODO look at again my not work
+ \'[\'\n][.]{1,80}\'   {return STRINGLIT;} // TODO look at again my not work
 
  [\t\r\n]+            {        }
 

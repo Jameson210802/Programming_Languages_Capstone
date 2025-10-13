@@ -24,11 +24,28 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
 
 // TODO: Define and Implement structures to hold each data node
 // TODO: Overload << for Program
+struct Write{
 
+  string write;
+
+
+
+  void interpret(ostream& out)
+  {
+    out << write;
+  }
+};
 struct Block {
 
+  unique_ptr<Write> write;
+  void print_tree(ostream& os,char* tree,bool status)
+  {
+    ast_line(os,tree,status,"block");
+    if(write) write->print_tree();
+  }
 
-  //void print_tree(ostream& os,char* tree,bool status){}
+
+  void interpret(ostream& out) { if (write) write->interpret(out); }
 };
 
 struct Program 
@@ -47,6 +64,21 @@ struct Program
     }
   }
   void interpret(ostream& out) { if (block) block->interpret(out); }
+
+
+
+
+
+
 };
+
+
+  void operator<<(ostream &out, unique_ptr<Program> &root)
+  {
+
+    
+    root->interpret(out);
+   
+  }
 
 
