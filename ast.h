@@ -28,11 +28,7 @@ struct Write{
 
   string stringlit;
 
-  
 
-
- // stringlit.erase(size,1);
- // stringlit.erase(0,1);
 
   void interpret(ostream& out)
   {
@@ -40,7 +36,7 @@ struct Write{
   }
   void print_tree(ostream& os)
   {
-    ast_line(os,"",true,"write(" + stringlit +")");
+    ast_line(os,"    ",true,"write(\'" + stringlit + "\')");
   }
 
 };
@@ -49,7 +45,7 @@ struct Block {
   unique_ptr<Write> write;
   void print_tree(ostream& os,const char *tree,bool status)
   {
-    ast_line(os,tree,status,"block");
+    ast_line(os,tree,status,"Block");
     if(write) write->print_tree(os);
   }
 

@@ -19,8 +19,8 @@ PROGRAM        {return PROGRAM;}
 BEGIN          {return TOK_BEGIN;}
 END            {return END;}
 WRITE          {return WRITE;}
- 
-[A-Z][A-Z0-9]{0,8}     {return IDENT;}
+[A-Z][A-Z0-9]{8,} {return UNKNOWN;}
+[A-Z][A-Z0-9]{0,7}     {return IDENT;}
 
 \'[^\'\n].{1,80}\'   {return STRINGLIT;} // TODO look at again my not work
 

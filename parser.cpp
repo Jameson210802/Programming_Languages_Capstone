@@ -76,11 +76,22 @@ unique_ptr<Write> parseWrite()
   }
 
   string stringLex = peekLex;
+  string finalstring = "";
+  
 
-  //int size = stringLex.length();
-  //stringLex.pop_back();
+  // stringLex.pop_back();
+  // //TODO FIX THIS WHERE IT LOOPS INTO SEARCHING FOR IT. 
+  // stringLex.erase(0,1);
+  auto s = make_unique<Write>();
+  // s->stringlit = stringLex;
+  int size = stringLex.length();
+  for(int i = 0; i <= size; i++ )
+  {
+      if(stringLex[i] != '\''){finalstring +=stringLex[i]; }
+  }
 
-  //stringLex.erase(0,1);
+  s->stringlit = finalstring;
+
   
   expect(STRINGLIT,"STRINGLIT");
 
@@ -90,9 +101,9 @@ unique_ptr<Write> parseWrite()
     throw runtime_error("Parse error: expected CLOSEPAREN after STRINGLIT");
   }
   expect(CLOSEPAREN,"CLOSEPAREN");
-  auto s = make_unique<Write>();
+  
 
-  s->stringlit;
+ 
 
   return s;
 

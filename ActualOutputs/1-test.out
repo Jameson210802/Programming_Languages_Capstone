@@ -4,7 +4,7 @@
 [1;33m===== BEGIN TOKENIZE =====[0m
 
 1 PROGRAM
-1 UNKNOWN
+2 UNKNOWN
 
 ### PARSE (stdout)
 
@@ -13,7 +13,7 @@
 
 ### STDERR (tokens + parse)
 [tokens stderr]
-Lexical error near: ' '
+Lexical error near: 'KNOCKKNOCK'
 
 [parse stderr]
 Parse error: expected IDENT after PROGRAM
