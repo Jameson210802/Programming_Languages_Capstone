@@ -26,17 +26,32 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
 // TODO: Overload << for Program
 struct Write{
 
+  // string stored;
   string stringlit;
+  
+  //tringlit.pop_back();
 
 
 
   void interpret(ostream& out)
   {
+
     out << stringlit;
+    // if(stringlit.empty()){
+
+    //   out << "\'\'";
+
+    // }
+    // else{
+    //   out << stringlit;
+    // }
+    
   }
   void print_tree(ostream& os)
   {
-    ast_line(os,"    ",true,"write(\'" + stringlit + "\')");
+
+    ast_line(os,"    ",true,"Write( " + stringlit + " )");
+
   }
 
 };

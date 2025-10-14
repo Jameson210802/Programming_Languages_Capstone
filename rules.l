@@ -21,8 +21,8 @@ END            {return END;}
 WRITE          {return WRITE;}
 [A-Z][A-Z0-9]{8,} {return UNKNOWN;}
 [A-Z][A-Z0-9]{0,7}     {return IDENT;}
-
-\'[^\'\n].{1,80}\'   {return STRINGLIT;} // TODO look at again my not work
+'[^\'\n]{81,}'   {return STRINGLIT;} 
+'[^\'\n]{0,80}'   {return STRINGLIT;} 
 
 
 

@@ -75,22 +75,9 @@ unique_ptr<Write> parseWrite()
     throw runtime_error("Parse error: expected STRINGLIT inside WRITE(...)");
   }
 
-  string stringLex = peekLex;
-  string finalstring = "";
-  
-
-  // stringLex.pop_back();
-  // //TODO FIX THIS WHERE IT LOOPS INTO SEARCHING FOR IT. 
-  // stringLex.erase(0,1);
   auto s = make_unique<Write>();
-  // s->stringlit = stringLex;
-  int size = stringLex.length();
-  for(int i = 0; i <= size; i++ )
-  {
-      if(stringLex[i] != '\''){finalstring +=stringLex[i]; }
-  }
+  s->stringlit = peekLex;
 
-  s->stringlit = finalstring;
 
   
   expect(STRINGLIT,"STRINGLIT");
