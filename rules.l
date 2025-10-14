@@ -13,23 +13,23 @@
 %%
  /* DEFINE YOUR RULES STARTING HERE */
 
- PROGRAM        {return PROGRAM;}
- BEGIN          {return BEGIN;}
- END            {return END;}
- WRITE          {return WRITE;}
+PROGRAM        {return PROGRAM;}
+BEGIN          {return TOK_BEGIN;}
+END            {return END;}
+WRITE          {return WRITE;}
  
- [A-Z][A-Z0-9]{0,8}     {return IDENT;}
+[A-Z][A-Z0-9]{0,8}     {return IDENT;}
 
- \'[\'\n][.]{1,80}\'   {return STRINGLIT;} // TODO look at again my not work
+\'[\'\n].{1,80}\'   {return STRINGLIT;} // TODO look at again my not work
 
- [\t\r\n]+            {        }
+[\t\r\n]+            {        }
 
- '('                {return OPENPAREN;}
- ')'                {return CLOSEPAREN;}
- ';'                {return SEMICOLON;}
+'\('                {return OPENPAREN;}
+'\)'                {return CLOSEPAREN;}
+'\;'                {return SEMICOLON;}
 
- <<EOF>>        {return TOK_EOF;}
- .              {return UNKNOWN;}
+<<EOF>>        {return TOK_EOF;}
+.              {return UNKNOWN;}
 
 
 

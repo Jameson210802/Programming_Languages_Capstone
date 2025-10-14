@@ -61,7 +61,36 @@ Token expect(Token want, const char* msg)
 // TODO: implement parsing functions for each grammar in your language
 
 
+unique_ptr<Write> parseWrite()
+{
+  if(peek() != OPENPAREN)
+  {
+    throw runtime_error("Parse error: expected OPENPAREN after WRITE");
+  }
 
+  expect(OPENPAREN,"OPENPAREN");
+
+  if(peek() != STRINGLIT)
+  {
+    throw runtime_error("Parse error: expected STRINGLIT inside WRITE(...)");
+  }
+
+  string stringLex = peekLex;
+  expect(STRINGLIT,"STRINGLIT");
+
+  
+  if(peek() != CLOSEPAREN)
+  {
+    throw runtime_error("Parse error: expected CLOSEPAREN after STRINGLIT");
+  }
+
+  auto s = unique_ptr<Write>();
+
+  s->stringlit;
+
+  return s;
+
+}
 
 
 
@@ -93,16 +122,7 @@ unique_ptr<Block> parseBlock()
 
  expect(EOF,"End of file");
 
-
-  // if(peek() != STRINGLIT)
-  // {
-  //   throw runtime_error("Parse error: expected WRITE after BEGIN");
-  // }
-
-  
-
-
-
+ return b;
 
 }
 

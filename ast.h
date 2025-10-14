@@ -26,22 +26,27 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
 // TODO: Overload << for Program
 struct Write{
 
-  string write;
+  string stringlit;
 
 
 
   void interpret(ostream& out)
   {
-    out << write;
+    out << stringlit;
   }
+  void print_tree(ostream& os)
+  {
+    ast_line(os,"",false,"write(" + stringlit +")");
+  }
+
 };
 struct Block {
 
   unique_ptr<Write> write;
-  void print_tree(ostream& os,char* tree,bool status)
+  void print_tree(ostream& os,const char *tree,bool status)
   {
     ast_line(os,tree,status,"block");
-    if(write) write->print_tree();
+    if(write) write->print_tree(os);
   }
 
 
@@ -65,20 +70,18 @@ struct Program
   }
   void interpret(ostream& out) { if (block) block->interpret(out); }
 
+  
+  friend ostream& operator<<(ostream &out, unique_ptr<Program>& root)
+  {
 
-
-
-
+    
+    root->print_tree(out);
+   
+    return out;
+  }
 
 };
 
 
-  void operator<<(ostream &out, unique_ptr<Program> &root)
-  {
-
-    
-    root->interpret(out);
-   
-  }
 
 
