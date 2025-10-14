@@ -76,6 +76,12 @@ unique_ptr<Write> parseWrite()
   }
 
   string stringLex = peekLex;
+
+  //int size = stringLex.length();
+  //stringLex.pop_back();
+
+  //stringLex.erase(0,1);
+  
   expect(STRINGLIT,"STRINGLIT");
 
   
@@ -83,8 +89,8 @@ unique_ptr<Write> parseWrite()
   {
     throw runtime_error("Parse error: expected CLOSEPAREN after STRINGLIT");
   }
-
-  auto s = unique_ptr<Write>();
+  expect(CLOSEPAREN,"CLOSEPAREN");
+  auto s = make_unique<Write>();
 
   s->stringlit;
 
@@ -110,17 +116,17 @@ unique_ptr<Block> parseBlock()
 
   expect(WRITE,"string to print");
 
- auto b =  unique_ptr<Block>();
+ auto b =  make_unique<Block>();
 
  b->write = parseWrite();
 
-
- if(peek() != EOF)
+ 
+ if(peek() != END)
  {
     throw runtime_error("Parse error: expected END to close block");
  }
 
- expect(EOF,"End of file");
+ expect(END,"End of file");
 
  return b;
 

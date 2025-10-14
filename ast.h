@@ -28,7 +28,11 @@ struct Write{
 
   string stringlit;
 
+  
 
+
+ // stringlit.erase(size,1);
+ // stringlit.erase(0,1);
 
   void interpret(ostream& out)
   {
@@ -36,7 +40,7 @@ struct Write{
   }
   void print_tree(ostream& os)
   {
-    ast_line(os,"",false,"write(" + stringlit +")");
+    ast_line(os,"",true,"write(" + stringlit +")");
   }
 
 };
