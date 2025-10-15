@@ -21,7 +21,7 @@ END            {return END;}
 WRITE          {return WRITE;}
 [A-Z][A-Z0-9]{8,} {return UNKNOWN;}
 [A-Z][A-Z0-9]{0,7}     {return IDENT;}
-'[^\'\n]{81,}'   {return STRINGLIT;} 
+'[^\'\n]{81,}'   {return UNKNOWN;} 
 '[^\'\n]{0,80}'   {return STRINGLIT;} 
 
 
