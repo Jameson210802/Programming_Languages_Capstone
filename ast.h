@@ -36,7 +36,7 @@ struct Write{
   void interpret(ostream& out)
   {
 
-    out << stringlit;
+    out << stringlit << endl;
     // if(stringlit.empty()){
 
     //   out << "\'\'";

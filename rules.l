@@ -24,6 +24,19 @@ WRITE          {return WRITE;}
 '[^\'\n]{81,}'   {return UNKNOWN;} 
 '[^\'\n]{0,80}'   {return STRINGLIT;} 
 
+VAR               {return VAR;}
+INTEGER          {return INTEGER;}
+REAL            {return REAL;}
+
+
+READ               {return READ;}
+:=                 {return ASSIGN;}
+[0-9]+          {return INTLIT;}
+[0-9]+.[0-9]+   {return FLOATLIT}
+
+
+:                  {return COLON;}
+
 
 
 \(                {return OPENPAREN;}
