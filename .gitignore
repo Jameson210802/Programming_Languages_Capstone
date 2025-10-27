@@ -1,0 +1,9 @@
+ignore*
+
+
+*.o
+
+lex.yy.c
+
+parse
+
