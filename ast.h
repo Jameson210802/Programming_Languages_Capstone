@@ -22,9 +22,89 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
   os << prefix << (last ? "└── " : "├── ") << label << "\n";
 }
 
+//map<string,variant<int,double>> sysmbol_table;
+
+
+
 // TODO: Define and Implement structures to hold each data node
 // TODO: Overload << for Program
-struct Write{
+
+
+struct Statement
+{
+
+
+
+  virtual void interpret(ostream& out)=0;
+  virtual void print_tree(ostream& os)=0;
+
+};
+
+struct CmpStatement
+ {
+
+  vector<unique_ptr<Statement>> stmts;
+
+  void print_tree(ostream& os)
+  {
+    //TODO fill in to print tree later
+  }
+
+  void interpret(ostream& out){for(auto&s: stmts) s->interpret(out);}
+};
+
+
+struct Read
+{
+
+
+  string target;
+
+
+  void print_tree(ostream&os)
+  {
+
+  }
+
+  void interpret(ostream&out)
+  {
+    
+  }
+
+
+};
+
+struct Assign 
+{
+
+  string id; 
+  Token type;
+  string value;
+
+
+
+  void print_tree(ostream&os)
+  {
+
+  }
+  
+  void interpret(ostream&out)
+  {
+    
+  }
+
+
+};
+
+
+
+
+
+
+
+
+struct Write
+{
 
   // string stored;
   string stringlit;
@@ -55,9 +135,15 @@ struct Write{
   }
 
 };
-struct Block {
+
+
+
+
+struct Block 
+{
 
   unique_ptr<Write> write;
+
   void print_tree(ostream& os,const char *tree,bool status)
   {
     ast_line(os,tree,status,"Block");
