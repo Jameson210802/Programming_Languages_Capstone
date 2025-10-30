@@ -205,10 +205,34 @@ unique_ptr<Statement> parseStatement()
 
   //auto c = make_unique<CompoundStatement>;
 
-  do
+
+  switch (peek())
   {
+    case READ: // if token is goes to parseRead
+      expect(READ,"Read token");
+      return parseRead();
+      break;
+
+    case WRITE: //if token is write goest to parseRead
+      expect(WRITE,"Write token");
+      return parseWrite();
+      break;
     
-  } while (peek() == SEMICOLON && nextTok());
+    case IDENT: // if token is an Identifier goes to assign
+      return parseAssign();
+      break;
+
+    case TOK_BEGIN:
+      return parseCompound();  
+      break;
+
+    default:
+      runtime_error("Expected either READ,WRITE,IDENT, or BEGIN in statement");
+
+      break;
+    }
+
+
   
   
   
@@ -230,27 +254,9 @@ unique_ptr<CompoundStatement> parseCompound()
   do
   {
 
-    switch (peek())
-    {
-    case READ: // if token is goes to parseRead
-      expect(READ,"Read token");
-      c->stmts.push_back(parseRead());
-      break;
-    case WRITE: //if token is write goest to parseRead
-      expect(WRITE,"Write token");
-      c->stmts.push_back(parseWrite());
-      break;
-    
-    case IDENT: // if token is an Identifier goes to assign
-      c->stmts.push_back(parseAssign());
 
-    
-    case TOK_BEGIN: // if token is begin start another compound.
 
-      c->stmts.push_back(parseCompound());
-      default:
-      break;
-    }
+    c->stmts.push_back(parseStatement());
     
     // if(peek() == READ) // if token is goes to parseRead
     // {
