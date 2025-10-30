@@ -24,6 +24,7 @@ string peekLex;
 
 inline const char* tname(Token t) { return tokName(t); }
 
+
 Token peek() 
 {
   if (!havePeek) {
@@ -56,7 +57,6 @@ Token expect(Token want, const char* msg)
   }
   return got;
 }
-
 
 // TODO: implement parsing functions for each grammar in your language
 
@@ -95,11 +95,101 @@ unique_ptr<Write> parseWrite()
   return s;
 
 }
+unique_ptr<Read> parseRead()
+{
+
+}
+unique_ptr<Assign> parseAssign()
+{
+
+}
+
+
+
+
+unique_ptr<Statement> parseStatement()
+{
+
+
+}
+
+unique_ptr<CompoundStatement> parseCompound()
+{
+
+
+}
+
+
+
+// unique_ptr<CompoundStatement> parseDeclaration()
+// {
+
+//   string previous_name = " ";
+//   if(peek() != IDENT)
+//   {
+//     throw runtime_error("Parser Error: expected IDENT after VAR");
+//   }
+
+//   string current_name = peekLex;
+
+//   if()
+//   expect(IDENT,"Var Identifier");
+
+  
+
+
+
+
+// }
+
+
 
 
 
 unique_ptr<Block> parseBlock()
 {
+  //auto b =  make_unique<Block>();
+
+  string var_name; 
+  //string var_type;
+  Token var_type; 
+  if(peek() == VAR) //checks to see if the variable decleartions exists
+  {
+    expect(VAR,"Var Declarations");
+  }
+  
+  if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
+
+  var_name = peekLex;
+  expect(IDENT,"variable name");
+  
+  if(peek() != COLON){throw runtime_error("Expected colon (:) after IDENT");}
+
+  expect(COLON,"Colon");
+
+  var_type = peek();
+
+  if(var_type != INTEGER || var_type != REAL){throw runtime_error("Expected INTEGER or REAL after COLON (:)");}
+
+  
+
+  if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");}
+
+
+  auto it = symbolTable.find(var_name);
+
+  if
+
+  
+  
+
+
+
+
+
+
+
+
 
   if(peek() != TOK_BEGIN)
   {
@@ -107,16 +197,21 @@ unique_ptr<Block> parseBlock()
   }
   expect(TOK_BEGIN,"Beginning of Block");
 
-  if(peek()!= WRITE)
-  {
-    throw runtime_error("Parse error: expected WRITE after BEGIN");
-  }
 
-  expect(WRITE,"string to print");
 
- auto b =  make_unique<Block>();
 
- b->write = parseWrite();
+
+
+  // if(peek()!= WRITE)
+  // {
+  //   throw runtime_error("Parse error: expected WRITE after BEGIN");
+  // }
+
+ // expect(WRITE,"string to print");
+
+
+
+ //b->write = parseWrite();
 
  
  if(peek() != END)
@@ -126,7 +221,7 @@ unique_ptr<Block> parseBlock()
 
  expect(END,"End of file");
 
- return b;
+ //return b;
 
 }
 

@@ -13,6 +13,9 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include <map>
+#include <variant>
+
 using namespace std;
 
 // -----------------------------------------------------------------------------
@@ -22,7 +25,7 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
   os << prefix << (last ? "└── " : "├── ") << label << "\n";
 }
 
-//map<string,variant<int,double>> sysmbol_table;
+inline map<string,variant<int,double>> symbolTable;  //TODO uncomment when ready3
 
 
 
@@ -36,37 +39,39 @@ struct Statement
 
 
   virtual void interpret(ostream& out)=0;
-  virtual void print_tree(ostream& os)=0;
+  virtual void print_tree(ostream& os,string prefix)=0;
 
 };
 
-struct CmpStatement
- {
+struct CompoundStatement : Statement
+{
 
   vector<unique_ptr<Statement>> stmts;
 
-  void print_tree(ostream& os)
+  void print_tree(ostream& os,string prefix) override
   {
     //TODO fill in to print tree later
+    for (auto& s: stmts) s->print_tree(os,"    "+ prefix);
   }
 
-  void interpret(ostream& out){for(auto&s: stmts) s->interpret(out);}
+  void interpret(ostream& out) override{
+    for(auto& s: stmts) s->interpret(out); }
 };
 
 
-struct Read
+struct Read : Statement
 {
 
 
   string target;
 
 
-  void print_tree(ostream&os)
+  void print_tree(ostream&os) override
   {
 
   }
 
-  void interpret(ostream&out)
+  void interpret(ostream&out) override
   {
     
   }
@@ -74,7 +79,7 @@ struct Read
 
 };
 
-struct Assign 
+struct Assign : Statement
 {
 
   string id; 
@@ -83,14 +88,14 @@ struct Assign
 
 
 
-  void print_tree(ostream&os)
+  void print_tree(ostream&os) override
   {
 
   }
   
-  void interpret(ostream&out)
+  void interpret(ostream&out) override
   {
-    
+
   }
 
 
@@ -103,7 +108,7 @@ struct Assign
 
 
 
-struct Write
+struct Write : Statement
 {
 
   // string stored;
@@ -142,16 +147,17 @@ struct Write
 struct Block 
 {
 
-  unique_ptr<Write> write;
+ // unique_ptr<Write> write;
+  unique_ptr<CompoundStatement> comp;
 
   void print_tree(ostream& os,const char *tree,bool status)
   {
-    ast_line(os,tree,status,"Block");
-    if(write) write->print_tree(os);
+    ast_line(os,tree,status,"Block"); //TODO might need to remove this line. 
+    if(comp) comp->print_tree(os);
   }
 
 
-  void interpret(ostream& out) { if (write) write->interpret(out); }
+  void interpret(ostream& out) { if (comp) comp->interpret(out); }
 };
 
 struct Program 
