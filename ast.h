@@ -15,6 +15,7 @@
 #include <iostream>
 #include <map>
 #include <variant>
+#include <vector>
 
 using namespace std;
 
@@ -25,9 +26,7 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
   os << prefix << (last ? "└── " : "├── ") << label << "\n";
 }
 
-inline map<string,variant<int,double>> symbolTable;  //TODO uncomment when ready3
-
-
+inline map<string, variant<int,double>> symbolTable;
 
 // TODO: Define and Implement structures to hold each data node
 // TODO: Overload << for Program

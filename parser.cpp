@@ -151,44 +151,60 @@ unique_ptr<Block> parseBlock()
   //auto b =  make_unique<Block>();
 
   string var_name; 
-  //string var_type;
   Token var_type; 
-  if(peek() == VAR) //checks to see if the variable decleartions exists
+  bool var_list = true;
+  
+  if(peek() == TOK_BEGIN){var_list = false;}
+  
+
+  while(var_list)
   {
+    if(peek() != VAR) //checks to see if the variable decleartions exists
+    {
+      throw runtime_error("EXPECTED VAR since there was not a begin token");
+    }
     expect(VAR,"Var Declarations");
+    if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
+
+    var_name = peekLex; // stoes the name of the variable. 
+
+    expect(IDENT,"variable name");
+    
+    if(peek() != COLON){throw runtime_error("Expected colon (:) after IDENT");}
+
+    expect(COLON,"Colon");
+
+    var_type = peek(); // stores the token type. 
+
+    if(var_type != INTEGER || var_type != REAL){throw runtime_error("Expected INTEGER or REAL after COLON (:)");} // if the variable is neither a INTERGER or a REAL number it errors out. 
+
+    
+
+    if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");} //errors out if no SEMICOLON
+
+
+    auto it = symbolTable.find(var_name);
+
+    if(it!= symbolTable.end())
+    {
+      throw runtime_error("duplicate");
+    }
+
+    if(var_type == INTEGER)
+    {
+      symbolTable[var_name] = 0;
+    }
+    else
+    {
+      symbolTable[var_name] = 0.0;
+    }
+
+    if(peek()!= IDENT)
+    {
+      var_list = false;
+    }
+
   }
-  
-  if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
-
-  var_name = peekLex;
-  expect(IDENT,"variable name");
-  
-  if(peek() != COLON){throw runtime_error("Expected colon (:) after IDENT");}
-
-  expect(COLON,"Colon");
-
-  var_type = peek();
-
-  if(var_type != INTEGER || var_type != REAL){throw runtime_error("Expected INTEGER or REAL after COLON (:)");}
-
-  
-
-  if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");}
-
-
-  auto it = symbolTable.find(var_name);
-
-  if
-
-  
-  
-
-
-
-
-
-
-
 
 
   if(peek() != TOK_BEGIN)
