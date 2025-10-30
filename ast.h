@@ -65,7 +65,7 @@ struct Read : Statement
   string target;
 
 
-  void print_tree(ostream&os) override
+  void print_tree(ostream&os,string prefix) override
   {
 
   }
@@ -73,6 +73,17 @@ struct Read : Statement
   void interpret(ostream&out) override
   {
     
+    auto it = symbolTable.find(target);
+
+    if(it != symbolTable.end())
+    {
+     visit([&](auto& value) { cin >> value; }, it->second);
+    }
+    else
+    {
+      throw runtime_error("unable to find Identifer for Read.");
+    }
+
   }
 
 
@@ -87,14 +98,32 @@ struct Assign : Statement
 
 
 
-  void print_tree(ostream&os) override
+  void print_tree(ostream&os,string prefix) override
   {
 
   }
   
   void interpret(ostream&out) override
   {
+    int int_val;
+    double double_val;
+    auto it = symbolTable.find(id);
+    if(type == INTLIT)
+    {
+      int_val = stoi(value);
+      it->second = int_val;
+    }
+    else if (type == FLOATLIT)
+    {
+      double_val = stod(value);
+      it->second = double_val;
+    }
+    else
+    {
+      auto ident_val = symbolTable.find(value); // gets the value of the identifier
 
+      it->second = ident_val->second; // Sets the variable equal to Identifer VAL := IDENT
+    }
   }
 
 
@@ -111,7 +140,10 @@ struct Write : Statement
 {
 
   // string stored;
-  string stringlit;
+  //string stringlit;
+
+  string content;
+  Token type;
   
   //tringlit.pop_back();
 
@@ -119,8 +151,30 @@ struct Write : Statement
 
   void interpret(ostream& out)
   {
+    
 
-    out << stringlit << endl;
+    if(type == STRINGLIT)
+    {
+      out << content << endl;
+    }
+    else
+    {
+      auto it = symbolTable.find(content);
+
+      if(it != symbolTable.end())
+      {
+        visit([&out](auto&& value) { out << value << endl; }, it->second);
+      }
+      else
+      {
+        throw runtime_error("unable to find Identifer for Read.");
+      }
+    }
+    
+
+
+
+
     // if(stringlit.empty()){
 
     //   out << "\'\'";
@@ -129,13 +183,12 @@ struct Write : Statement
     // else{
     //   out << stringlit;
     // }
-    
   }
   void print_tree(ostream& os)
   {
 
-    ast_line(os,"    ",true,"Write( " + stringlit + " )");
-
+    ast_line(os,"    ",true,"Write( " + content + " )");
+    
   }
 
 };
@@ -152,7 +205,7 @@ struct Block
   void print_tree(ostream& os,const char *tree,bool status)
   {
     ast_line(os,tree,status,"Block"); //TODO might need to remove this line. 
-    if(comp) comp->print_tree(os);
+    if(comp) comp->print_tree(os," ");
   }
 
 

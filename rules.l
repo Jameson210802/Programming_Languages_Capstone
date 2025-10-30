@@ -32,7 +32,7 @@ REAL            {return REAL;}
 READ               {return READ;}
 :=                 {return ASSIGN;}
 [0-9]+          {return INTLIT;}
-[0-9]+.[0-9]+   {return FLOATLIT}
+[0-9]+.[0-9]+   {return FLOATLIT;}
 
 
 :                  {return COLON;}

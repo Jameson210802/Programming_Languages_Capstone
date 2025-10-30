@@ -98,13 +98,50 @@ unique_ptr<Write> parseWrite()
 unique_ptr<Read> parseRead()
 {
 
+  auto r = make_unique<Read>();
+
+  
+
+  // if(peek() != READ)
+  // {
+  //   throw runtime_error("expected read");
+
+  // }
+
+  //expect(READ,"Reading user value");
+
+  if(peek()!=OPENPAREN)
+  {
+    throw runtime_error("expected OPENPAREN after Read");
+  }
+
+  expect(OPENPAREN,"OPENPAREN");
+  if(peek() != IDENT)
+  {
+    throw runtime_error("expected IDENT after OPENPAREN");
+
+  }
+
+  r->target = peekLex;
+
+  expect(IDENT,"IDENT");
+
+  if(peek()!=CLOSEPAREN)
+  {
+    throw runtime_error("expected CLOSEPAREN after IDENT");
+  }
+
+  expect(CLOSEPAREN,"OPENPAREN");
+
+  return r;
+  
 }
 unique_ptr<Assign> parseAssign()
 {
  // string var_name; 
-  Token value_type;
-  int int_val;
-  double double_val;
+  //Token value_type;
+  //int int_val;
+  //double double_val;
 
   auto a = make_unique<Assign>();
   if(peek() != IDENT)
@@ -122,29 +159,36 @@ unique_ptr<Assign> parseAssign()
 
   a->type = peek();
   a->value = peekLex;
-  if(a->type != INTLIT || a->type != FLOATLIT)
+  if(a->type != INTLIT || a->type != FLOATLIT || a->type != IDENT)
   {
-    throw runtime_error("Expected Either INTLIT or FLOATLIT after assign");
+    throw runtime_error("Expected Either INTLIT or FLOATLIT or IDENT after assign");
   }
 
   expect(a->type,"Value to be assigned to variable");
 
-  auto it = symbolTable.find(a->value);
-  if(a->type == INTLIT)
-  {
-    int_val = stoi(a->value);
-    it->second = int_val;
-  }
-  else
-  {
-    double_val = stod(a->value);
-    it->second = double_val;
-  }
+  //TODO FIGURE OUT HOW TO DO IDENT with assign
+  // auto it = symbolTable.find(a->id);
+  // if(a->type == INTLIT)
+  // {
+  //   int_val = stoi(a->value);
+  //   it->second = int_val;
+  // }
+  // else if (a->type == INTLIT)
+  // {
+  //   double_val = stod(a->value);
+  //   it->second = double_val;
+  // }
+  // else
+  // {
+  //   auto ident_val = symbolTable.find(a->value); // gets the value of the identifier
+
+  //   it->second = ident_val->second; // Sets the variable equal to Identifer VAL := IDENT
+  // }
 
   
 
 
-
+  return a;
 
 
 
