@@ -67,6 +67,8 @@ struct Read : Statement
 
   void print_tree(ostream&os,string prefix) override
   {
+    
+    ast_line(os,"    ",true,"read " +target);
 
   }
 
@@ -100,7 +102,7 @@ struct Assign : Statement
 
   void print_tree(ostream&os,string prefix) override
   {
-
+    ast_line(os,"    ",true,"Assign := " + value);
   }
   
   void interpret(ostream&out) override
@@ -136,7 +138,7 @@ struct Assign : Statement
 
 
 
-struct Write : Statement
+struct Write:Statement
 {
 
   // string stored;
@@ -184,10 +186,10 @@ struct Write : Statement
     //   out << stringlit;
     // }
   }
-  void print_tree(ostream& os)
+  void print_tree(ostream& os,string prefix)
   {
 
-    ast_line(os,"    ",true,"Write( " + content + " )");
+    ast_line(os,"    ",true,"content: " +content);
     
   }
 

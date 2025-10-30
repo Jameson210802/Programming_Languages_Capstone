@@ -70,17 +70,20 @@ unique_ptr<Write> parseWrite()
 
   expect(OPENPAREN,"OPENPAREN");
 
-  if(peek() != STRINGLIT)
+  Token type = peek();
+  if(type != STRINGLIT || type != IDENT)
   {
-    throw runtime_error("Parse error: expected STRINGLIT inside WRITE(...)");
+    throw runtime_error("Parse error: expected STRINGLIT or IDENT inside WRITE(...)");
   }
 
   auto s = make_unique<Write>();
-  s->stringlit = peekLex;
+  s->content = peekLex;
+
+
 
 
   
-  expect(STRINGLIT,"STRINGLIT");
+  expect(type,"STRINGLIT or IDENT");
 
   
   if(peek() != CLOSEPAREN)
@@ -200,14 +203,76 @@ unique_ptr<Assign> parseAssign()
 unique_ptr<Statement> parseStatement()
 {
 
-  
+  //auto c = make_unique<CompoundStatement>;
 
+  do
+  {
+    
+  } while (peek() == SEMICOLON && nextTok());
+  
+  
+  
 }
 
 unique_ptr<CompoundStatement> parseCompound()
 {
 
+ auto c = make_unique<CompoundStatement>();
+ Token type; 
 
+  if(peek() != TOK_BEGIN)
+  {
+    throw runtime_error("exepected BEGIN to start compound statement");
+  }
+  expect(TOK_BEGIN,"BEGIN for Compound");
+
+  //c->stmts.push_back()
+  do
+  {
+
+    switch (peek())
+    {
+    case READ: // if token is goes to parseRead
+      expect(READ,"Read token");
+      c->stmts.push_back(parseRead());
+      break;
+    case WRITE: //if token is write goest to parseRead
+      expect(WRITE,"Write token");
+      c->stmts.push_back(parseWrite());
+      break;
+    
+    case IDENT: // if token is an Identifier goes to assign
+      c->stmts.push_back(parseAssign());
+
+    
+    case TOK_BEGIN: // if token is begin start another compound.
+
+      c->stmts.push_back(parseCompound());
+      default:
+      break;
+    }
+    
+    // if(peek() == READ) // if token is goes to parseRead
+    // {
+    //   expect(READ,"Read token");
+    //   c->stmts.push_back(parseRead());
+    // }
+    // else if (peek() == WRITE) // if token is 
+    // {
+    //   expect(WRITE,"Write token");
+    //   c->stmts.push_back(parseWrite());
+    // }
+    // else if (peek() == IDENT)
+    // {
+    //   c->stmts.push_back(parseAssign());
+    // }
+    
+    
+
+
+
+    
+  }while (peek() == SEMICOLON && nextTok());
 
 }
 
