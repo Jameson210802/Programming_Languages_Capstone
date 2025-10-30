@@ -1,1 +1,5 @@
-Parse error: expected BEGIN
+
+[1;33m===== BEGIN INTERPRETATION =====[0m
+
+'Welcome to the Compiler Café!'
+'How many cups of our finest bean water would you like today? '

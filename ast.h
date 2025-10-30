@@ -50,6 +50,7 @@ struct CompoundStatement : Statement
   void print_tree(ostream& os,string prefix) override
   {
     //TODO fill in to print tree later
+    ast_line(os,"    ",true,"Compound Statement");
     for (auto& s: stmts) s->print_tree(os,"    "+ prefix);
   }
 
@@ -74,6 +75,7 @@ struct Read : Statement
 
   void interpret(ostream&out) override
   {
+    (void)out;
     
     auto it = symbolTable.find(target);
 
@@ -102,13 +104,12 @@ struct Assign : Statement
 
   void print_tree(ostream&os,string prefix) override
   {
-    ast_line(os,"    ",true,"Assign := " + value);
+    ast_line(os,"    ",false,"Assign := " + value);
   }
   
   void interpret(ostream&out) override
   {
-    int int_val;
-    double double_val;
+    (void)out;
     auto it = symbolTable.find(id);
     auto ident_val = symbolTable.find(value);
   
@@ -153,27 +154,6 @@ struct Assign : Statement
     {
       throw runtime_error("was unable to find value to assign it to new variable");
     }
-
-
-    //   if(type == INTLIT)
-    //   {
-    //     int_val = stoi(value);
-    //     it->second = int_val;
-    //   }
-    //   else if (type == FLOATLIT)
-    //   {
-    //     double_val = stod(value);
-    //     it->second = double_val;
-    //   }
-    //   else
-    //   {
-    //     //cout << "here is the id: " << id << endl;
-    //    // cout << "here for assign using table " << value << endl;
-      
-
-
-    //   }
-    // }
 
 
   }
@@ -221,23 +201,12 @@ struct Write:Statement
       }
     }
     
-
-
-
-
-    // if(stringlit.empty()){
-
-    //   out << "\'\'";
-
-    // }
-    // else{
-    //   out << stringlit;
-    // }
   }
   void print_tree(ostream& os,string prefix)
   {
 
-    ast_line(os,"    ",true,"content: " +content);
+    ast_line(os,"    ",true,"Write");
+    ast_line(os,"        ",true,"content: " +content);
     
   }
 

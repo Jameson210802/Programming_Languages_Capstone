@@ -12,8 +12,8 @@
 # =============================================================================
 
 CXX      := g++
-#CXXFLAGS := -std=gnu++17 -Wall -Wextra -O2
-CXXFLAGS := -std=gnu++17 -Wall -Wextra -Og -g 
+CXXFLAGS := -std=gnu++17 -Wall -Wextra -O2
+#CXXFLAGS := -std=gnu++17 -Wall -Wextra -Og -g 
 .PHONY: all clean
 all: parse
 

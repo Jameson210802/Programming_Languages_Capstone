@@ -158,7 +158,6 @@ unique_ptr<Assign> parseAssign()
   //double double_val;
 
   auto a = make_unique<Assign>();
-  cout << "we are here " << endl;
   if(peek() != IDENT)
   {
     throw runtime_error("expected an IDENT for Assign");
@@ -291,7 +290,6 @@ unique_ptr<CompoundStatement> parseCompound()
 
     if(peek() == SEMICOLON)
     {
-     cout << "we are in here" << endl; 
      //throw runtime_error("Started Compound statement without a semicolon");
       expect(SEMICOLON,"SEMICOLON after statment");
 
@@ -428,7 +426,7 @@ unique_ptr<Block> parseBlock()
       symbolTable[var_name] = 0.0;
     }
 
-    std::cout << "right before IDENT at the end " << peekLex << std::endl;
+    //std::cout << "right before IDENT at the end " << peekLex << std::endl;
     if(peek()!= IDENT)
     {
       var_list = false;
@@ -437,7 +435,7 @@ unique_ptr<Block> parseBlock()
   }
 
 
-  std::cout << peekLex << std::endl;
+  //std::cout << peekLex << std::endl;
   if(peek() != TOK_BEGIN)
   {
     throw runtime_error("Parse error: expected BEGIN");
