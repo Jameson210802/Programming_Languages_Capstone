@@ -101,7 +101,7 @@ unique_ptr<Read> parseRead()
 }
 unique_ptr<Assign> parseAssign()
 {
-  string var_name; 
+ // string var_name; 
   Token value_type;
   int int_val;
   double double_val;
@@ -111,7 +111,7 @@ unique_ptr<Assign> parseAssign()
   {
     throw runtime_error("expected an IDENT for Assign");
   }
-  var_name = peekLex;
+  a->id = peekLex;
   expect(IDENT,"var name for assign");
 
   if(peek() != ASSIGN)
@@ -120,24 +120,24 @@ unique_ptr<Assign> parseAssign()
   }
   expect(ASSIGN,"Assign(:=) operator");
 
-  value_type = peek();
-
-  if(value_type != INTLIT || value_type != FLOATLIT)
+  a->type = peek();
+  a->value = peekLex;
+  if(a->type != INTLIT || a->type != FLOATLIT)
   {
     throw runtime_error("Expected Either INTLIT or FLOATLIT after assign");
   }
 
-  expect(value_type,"Value to be assigned to variable");
+  expect(a->type,"Value to be assigned to variable");
 
-  auto it = symbolTable.find(var_name);
-  if(value_type == INTLIT)
+  auto it = symbolTable.find(a->value);
+  if(a->type == INTLIT)
   {
-    int_val = stoi(peekLex);
+    int_val = stoi(a->value);
     it->second = int_val;
   }
   else
   {
-    double_val = stod(peekLex);
+    double_val = stod(a->value);
     it->second = double_val;
   }
 
