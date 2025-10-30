@@ -71,6 +71,7 @@ unique_ptr<Program> parseProgram();
 
 unique_ptr<Write> parseWrite()
 {
+  auto s = make_unique<Write>();
   if(peek() != OPENPAREN)
   {
     throw runtime_error("Parse error: expected OPENPAREN after WRITE");
@@ -78,20 +79,22 @@ unique_ptr<Write> parseWrite()
 
   expect(OPENPAREN,"OPENPAREN");
 
-  Token type = peek();
-  if(type != STRINGLIT || type != IDENT)
+  s->type = peek();
+  if(s->type != STRINGLIT && s->type != IDENT)
   {
     throw runtime_error("Parse error: expected STRINGLIT or IDENT inside WRITE(...)");
   }
 
-  auto s = make_unique<Write>();
-  s->content = peekLex;
+  
+  
 
-
+  
 
 
   
-  expect(type,"STRINGLIT or IDENT");
+  expect(s->type,"STRINGLIT or IDENT");
+  //cout << "content for " << peekLex << endl;
+  s->content = peekLex;
 
   
   if(peek() != CLOSEPAREN)
@@ -112,7 +115,6 @@ unique_ptr<Read> parseRead()
 
   auto r = make_unique<Read>();
 
-  
 
   // if(peek() != READ)
   // {
@@ -134,10 +136,10 @@ unique_ptr<Read> parseRead()
 
   }
 
-  r->target = peekLex;
+  
 
   expect(IDENT,"IDENT");
-
+  r->target = peekLex;
   if(peek()!=CLOSEPAREN)
   {
     throw runtime_error("expected CLOSEPAREN after IDENT");
@@ -156,27 +158,36 @@ unique_ptr<Assign> parseAssign()
   //double double_val;
 
   auto a = make_unique<Assign>();
+  cout << "we are here " << endl;
   if(peek() != IDENT)
   {
     throw runtime_error("expected an IDENT for Assign");
   }
-  a->id = peekLex;
+ 
   expect(IDENT,"var name for assign");
+  a->id = peekLex;
 
   if(peek() != ASSIGN)
   {
     throw runtime_error("expected an ASSIGN (:=) after IDENT");
   }
   expect(ASSIGN,"Assign(:=) operator");
-
-  a->type = peek();
-  a->value = peekLex;
-  if(a->type != INTLIT || a->type != FLOATLIT || a->type != IDENT)
+  Token tok = peek();
+  a->type = tok;
+  
+  if(tok != INTLIT && tok != FLOATLIT && tok!= IDENT)
   {
     throw runtime_error("Expected Either INTLIT or FLOATLIT or IDENT after assign");
   }
 
-  expect(a->type,"Value to be assigned to variable");
+  //cout << "we are here before a->type" << endl;
+  //  cout << a->type << endl;
+  //cout << "this is the token" << tok << endl;
+  //cout << "we made it before expect " << peekLex << endl; 
+  expect(tok,"Value to be assigned to variable");
+  a->value = peekLex;
+
+  //cout << "we made it past expect " << peekLex << endl;
 
   //TODO FIGURE OUT HOW TO DO IDENT with assign
   // auto it = symbolTable.find(a->id);
@@ -262,22 +273,35 @@ unique_ptr<CompoundStatement> parseCompound()
 
   c->stmts.push_back(parseStatement());
 
+    // if(peek() == SEMICOLON)
+    // {
+    //  //cout << "we are in here" << endl; 
+    //   //throw runtime_error("Started Compound statement without a semicolon");
+    //   expect(SEMICOLON,"SEMICOLON after statment");
+
+    // }
+
+   
+
   //c->stmts.push_back()
   do
   {
 
+    //cout << peekLex << endl;
+
     if(peek() == SEMICOLON)
     {
+     cout << "we are in here" << endl; 
+     //throw runtime_error("Started Compound statement without a semicolon");
       expect(SEMICOLON,"SEMICOLON after statment");
-    }
-    else
-    {
-      throw runtime_error("Started Compound statement without a semicolon");
-    }
 
+    }
 
     c->stmts.push_back(parseStatement());
 
+
+
+   
     
     
     // if(peek() == READ) // if token is goes to parseRead
@@ -300,6 +324,15 @@ unique_ptr<CompoundStatement> parseCompound()
 
     
   }while (peek() == SEMICOLON && nextTok());
+  
+  if(peek() != END)
+  {
+    throw runtime_error("expected end to end compound statement");
+  }
+  
+  expect(END,"end of compound statement");
+
+  return c;
 
 }
 
@@ -355,16 +388,18 @@ unique_ptr<Block> parseBlock()
    
     if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
 
-    var_name = peekLex; // stoes the name of the variable. 
 
     expect(IDENT,"variable name");
+
+    var_name = peekLex; // stoes the name of the variable. 
+
     
     if(peek() != COLON){throw runtime_error("Expected colon (:) after IDENT");}
 
     expect(COLON,"Colon");
 
     var_type = peek(); // stores the token type. 
-    std::cout << peekLex << std::endl;
+    //std::cout << peekLex << std::endl;
 
     if(var_type != INTEGER && var_type != REAL) // if the variable is neither a INTERGER or a REAL number it errors out. 
     {
@@ -372,7 +407,7 @@ unique_ptr<Block> parseBlock()
     } 
     expect(var_type,"Value of intialized variable");
 
-    cout << peekLex << endl;
+    //cout << peekLex << endl;
     if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");} //errors out if no SEMICOLON
 
     expect(SEMICOLON,"SEMICOLON after variable type");
@@ -407,7 +442,7 @@ unique_ptr<Block> parseBlock()
   {
     throw runtime_error("Parse error: expected BEGIN");
   }
-  expect(TOK_BEGIN,"Beginning of Block");
+  //expect(TOK_BEGIN,"Beginning of Block");
 
   
   b->comp = parseCompound();
@@ -438,12 +473,12 @@ unique_ptr<Block> parseBlock()
  //b->write = parseWrite();
 
  
- if(peek() != END)
- {
-    throw runtime_error("Parse error: expected END to close block");
- }
+//  if(peek() != END)
+//  {
+//     throw runtime_error("Parse error: expected END to close block");
+//  }
 
- expect(END,"End of file");
+//  expect(END,"End of file");
 
  return b;
 

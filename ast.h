@@ -110,27 +110,74 @@ struct Assign : Statement
     int int_val;
     double double_val;
     auto it = symbolTable.find(id);
-    if(type == INTLIT)
+    auto ident_val = symbolTable.find(value);
+  
+    if(it != symbolTable.end())
     {
-      int_val = stoi(value);
-      it->second = int_val;
-    }
-    else if (type == FLOATLIT)
-    {
-      double_val = stod(value);
-      it->second = double_val;
+
+      switch (type)
+      {
+        case INTLIT:
+          
+          it->second = stoi(value);
+
+          break;
+        case FLOATLIT:
+
+          it->second = stod(value);
+
+          break;
+        case IDENT: 
+
+          // gets the value of the identifier
+
+          if(ident_val != symbolTable.end())
+          {
+            it->second = ident_val->second; // Sets the variable equal to Identifer VAL := IDENT
+          }
+          else
+          {
+            throw runtime_error("was unable to find value to assign it to new variable");
+          }
+          break;
+          
+        default:
+        
+          throw runtime_error("Do not have one the nessarcy types to assign a veraible");
+
+          break;
+      }
+      
     }
     else
     {
-      auto ident_val = symbolTable.find(value); // gets the value of the identifier
-
-      it->second = ident_val->second; // Sets the variable equal to Identifer VAL := IDENT
+      throw runtime_error("was unable to find value to assign it to new variable");
     }
+
+
+    //   if(type == INTLIT)
+    //   {
+    //     int_val = stoi(value);
+    //     it->second = int_val;
+    //   }
+    //   else if (type == FLOATLIT)
+    //   {
+    //     double_val = stod(value);
+    //     it->second = double_val;
+    //   }
+    //   else
+    //   {
+    //     //cout << "here is the id: " << id << endl;
+    //    // cout << "here for assign using table " << value << endl;
+      
+
+
+    //   }
+    // }
+
+
   }
-
-
 };
-
 
 
 
@@ -153,10 +200,11 @@ struct Write:Statement
 
   void interpret(ostream& out)
   {
-    
+    //out << content << " " << type << endl;
 
     if(type == STRINGLIT)
     {
+
       out << content << endl;
     }
     else
@@ -169,7 +217,7 @@ struct Write:Statement
       }
       else
       {
-        throw runtime_error("unable to find Identifer for Read.");
+        throw runtime_error("unable to find Identifer for write.");
       }
     }
     
