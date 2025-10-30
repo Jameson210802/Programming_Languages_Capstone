@@ -101,6 +101,52 @@ unique_ptr<Read> parseRead()
 }
 unique_ptr<Assign> parseAssign()
 {
+  string var_name; 
+  Token value_type;
+  int int_val;
+  double double_val;
+
+  auto a = make_unique<Assign>();
+  if(peek() != IDENT)
+  {
+    throw runtime_error("expected an IDENT for Assign");
+  }
+  var_name = peekLex;
+  expect(IDENT,"var name for assign");
+
+  if(peek() != ASSIGN)
+  {
+    throw runtime_error("expected an ASSIGN (:=) after IDENT");
+  }
+  expect(ASSIGN,"Assign(:=) operator");
+
+  value_type = peek();
+
+  if(value_type != INTLIT || value_type != FLOATLIT)
+  {
+    throw runtime_error("Expected Either INTLIT or FLOATLIT after assign");
+  }
+
+  expect(value_type,"Value to be assigned to variable");
+
+  auto it = symbolTable.find(var_name);
+  if(value_type == INTLIT)
+  {
+    int_val = stoi(peekLex);
+    it->second = int_val;
+  }
+  else
+  {
+    double_val = stod(peekLex);
+    it->second = double_val;
+  }
+
+  
+
+
+
+
+
 
 }
 
@@ -110,11 +156,13 @@ unique_ptr<Assign> parseAssign()
 unique_ptr<Statement> parseStatement()
 {
 
+  
 
 }
 
 unique_ptr<CompoundStatement> parseCompound()
 {
+
 
 
 }
@@ -148,12 +196,12 @@ unique_ptr<CompoundStatement> parseCompound()
 
 unique_ptr<Block> parseBlock()
 {
-  //auto b =  make_unique<Block>();
+  auto b =  make_unique<Block>();
 
   string var_name; 
   Token var_type; 
   bool var_list = true;
-  
+
   if(peek() == TOK_BEGIN){var_list = false;}
   
 
@@ -178,7 +226,7 @@ unique_ptr<Block> parseBlock()
 
     if(var_type != INTEGER || var_type != REAL){throw runtime_error("Expected INTEGER or REAL after COLON (:)");} // if the variable is neither a INTERGER or a REAL number it errors out. 
 
-    
+    expect(var_type,"Value of intialized variable");
 
     if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");} //errors out if no SEMICOLON
 
@@ -213,6 +261,18 @@ unique_ptr<Block> parseBlock()
   }
   expect(TOK_BEGIN,"Beginning of Block");
 
+  
+  b->comp = parseCompound();
+
+
+
+
+
+
+
+
+ // unique_ptr<CompoundStatement> c = 
+
 
 
 
@@ -237,7 +297,7 @@ unique_ptr<Block> parseBlock()
 
  expect(END,"End of file");
 
- //return b;
+ return b;
 
 }
 
