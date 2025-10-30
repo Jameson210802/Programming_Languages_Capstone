@@ -25,6 +25,7 @@ string peekLex;
 inline const char* tname(Token t) { return tokName(t); }
 
 
+
 Token peek() 
 {
   if (!havePeek) {
@@ -59,6 +60,13 @@ Token expect(Token want, const char* msg)
 }
 
 // TODO: implement parsing functions for each grammar in your language
+unique_ptr<Statement> parseStatement();
+unique_ptr<Write> parseWrite();
+unique_ptr<Read> parseRead();
+unique_ptr<Assign> parseAssign();
+unique_ptr<CompoundStatement> parseCompound();
+unique_ptr<Block> parseBlock();
+unique_ptr<Program> parseProgram();
 
 
 unique_ptr<Write> parseWrite()
@@ -98,6 +106,7 @@ unique_ptr<Write> parseWrite()
   return s;
 
 }
+
 unique_ptr<Read> parseRead()
 {
 
@@ -227,6 +236,7 @@ unique_ptr<Statement> parseStatement()
       break;
 
     default:
+
       runtime_error("Expected either READ,WRITE,IDENT, or BEGIN in statement");
 
       break;
@@ -250,13 +260,25 @@ unique_ptr<CompoundStatement> parseCompound()
   }
   expect(TOK_BEGIN,"BEGIN for Compound");
 
+  c->stmts.push_back(parseStatement());
+
   //c->stmts.push_back()
   do
   {
 
+    if(peek() == SEMICOLON)
+    {
+      expect(SEMICOLON,"SEMICOLON after statment");
+    }
+    else
+    {
+      throw runtime_error("Started Compound statement without a semicolon");
+    }
 
 
     c->stmts.push_back(parseStatement());
+
+    
     
     // if(peek() == READ) // if token is goes to parseRead
     // {
@@ -272,7 +294,6 @@ unique_ptr<CompoundStatement> parseCompound()
     // {
     //   c->stmts.push_back(parseAssign());
     // }
-    
     
 
 
@@ -319,14 +340,19 @@ unique_ptr<Block> parseBlock()
 
   if(peek() == TOK_BEGIN){var_list = false;}
   
+ if(peek() == VAR) //checks to see if the variable decleartions exists
+  {
+    // std::cout << peek() << std::endl;;
+    // std::cout << peekLex << std::endl;
+    // throw runtime_error("EXPECTED VAR since there was not a begin token");
+    expect(VAR,"Var Declarations");
+  }
+
+
 
   while(var_list)
   {
-    if(peek() != VAR) //checks to see if the variable decleartions exists
-    {
-      throw runtime_error("EXPECTED VAR since there was not a begin token");
-    }
-    expect(VAR,"Var Declarations");
+   
     if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
 
     var_name = peekLex; // stoes the name of the variable. 
@@ -338,13 +364,18 @@ unique_ptr<Block> parseBlock()
     expect(COLON,"Colon");
 
     var_type = peek(); // stores the token type. 
+    std::cout << peekLex << std::endl;
 
-    if(var_type != INTEGER || var_type != REAL){throw runtime_error("Expected INTEGER or REAL after COLON (:)");} // if the variable is neither a INTERGER or a REAL number it errors out. 
-
+    if(var_type != INTEGER && var_type != REAL) // if the variable is neither a INTERGER or a REAL number it errors out. 
+    {
+      throw runtime_error("Expected INTEGER or REAL after COLON (:)");
+    } 
     expect(var_type,"Value of intialized variable");
 
+    cout << peekLex << endl;
     if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");} //errors out if no SEMICOLON
 
+    expect(SEMICOLON,"SEMICOLON after variable type");
 
     auto it = symbolTable.find(var_name);
 
@@ -362,6 +393,7 @@ unique_ptr<Block> parseBlock()
       symbolTable[var_name] = 0.0;
     }
 
+    std::cout << "right before IDENT at the end " << peekLex << std::endl;
     if(peek()!= IDENT)
     {
       var_list = false;
@@ -370,6 +402,7 @@ unique_ptr<Block> parseBlock()
   }
 
 
+  std::cout << peekLex << std::endl;
   if(peek() != TOK_BEGIN)
   {
     throw runtime_error("Parse error: expected BEGIN");

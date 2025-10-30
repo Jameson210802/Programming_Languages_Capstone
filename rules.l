@@ -16,20 +16,25 @@
 PROGRAM        {return PROGRAM;}
 [\t\r\n]+            {        }
 " "                 {   }
+VAR               {return VAR;}
+
 BEGIN          {return TOK_BEGIN;}
 END            {return END;}
 WRITE          {return WRITE;}
+READ               {return READ;}
+INTEGER          {return INTEGER;}
+REAL            {return REAL;}
+
 [A-Z][A-Z0-9]{8,} {return UNKNOWN;}
 [A-Z][A-Z0-9]{0,7}     {return IDENT;}
 '[^\'\n]{81,}'   {return UNKNOWN;} 
 '[^\'\n]{0,80}'   {return STRINGLIT;} 
 
-VAR               {return VAR;}
-INTEGER          {return INTEGER;}
-REAL            {return REAL;}
 
 
-READ               {return READ;}
+
+
+
 :=                 {return ASSIGN;}
 [0-9]+          {return INTLIT;}
 [0-9]+.[0-9]+   {return FLOATLIT;}
