@@ -50,8 +50,8 @@ struct CompoundStatement : Statement
   void print_tree(ostream& os,string prefix) override
   {
     //TODO fill in to print tree later
-    ast_line(os,"    ",true,"Compound Statement");
-    for (auto& s: stmts) s->print_tree(os,"    "+ prefix);
+    ast_line(os,prefix+"   ",true,"Compound Statement");
+    for (auto& s: stmts) s->print_tree(os,"\t"+ prefix);
   }
 
   void interpret(ostream& out) override{
@@ -104,7 +104,7 @@ struct Assign : Statement
 
   void print_tree(ostream&os,string prefix) override
   {
-    ast_line(os,"    ",false,"Assign := " + value);
+    ast_line(os,prefix,false,"Assign := " + value);
   }
   
   void interpret(ostream&out) override
@@ -205,12 +205,57 @@ struct Write:Statement
   void print_tree(ostream& os,string prefix)
   {
 
-    ast_line(os,"    ",true,"Write");
-    ast_line(os,"        ",true,"content: " +content);
+    ast_line(os,prefix,true,"Write");
+    ast_line(os,prefix+"       ",true,"content: " +content);
     
   }
 
 };
+
+// struct Declarations
+// {
+
+//   Token type;
+//   string name;
+
+
+//   void print_tree(ostream& os,string prefix)
+//   {
+
+//     ast_line(os,prefix+"    ",false,"Declarations:");
+//     if(type == INTEGER)
+//     {
+//       ast_line(os,prefix+"        ",false,name +" : INTEGER = 0");
+//     }
+//     else
+//     {
+//       ast_line(os,prefix+"        ",false,name +" : REAL = 0.0000");
+
+//     }
+    
+//   }
+
+//   void interpret(ostream& out)
+//   {
+//     auto it = symbolTable.find(name);
+//     out << "we are in here " << type << " "<< name << endl;
+//     if(it!= symbolTable.end())
+//     {
+//       throw runtime_error("duplicate");
+//     }
+
+//     if(type == INTEGER)
+//     {
+//       symbolTable[name] = 0;
+//     }
+//     else
+//     {
+//       symbolTable[name] = 0.0;
+
+//     }
+//   }
+// };
+
 
 
 
@@ -220,15 +265,25 @@ struct Block
 
  // unique_ptr<Write> write;
   unique_ptr<CompoundStatement> comp;
-
+  //unique_ptr<Declarations> declare;
   void print_tree(ostream& os,const char *tree,bool status)
   {
     ast_line(os,tree,status,"Block"); //TODO might need to remove this line. 
+
+
+    //if(declare) declare->print_tree(os," ");
     if(comp) comp->print_tree(os," ");
   }
 
 
-  void interpret(ostream& out) { if (comp) comp->interpret(out); }
+  void interpret(ostream& out)
+  { 
+    
+    //if(declare){out<< "hi";declare->interpret(out);}
+    
+    if(comp){comp->interpret(out);}
+  
+  }
 };
 
 struct Program 

@@ -67,6 +67,7 @@ unique_ptr<Assign> parseAssign();
 unique_ptr<CompoundStatement> parseCompound();
 unique_ptr<Block> parseBlock();
 unique_ptr<Program> parseProgram();
+//unique_ptr<Declarations> parseDeclarations();
 
 
 unique_ptr<Write> parseWrite()
@@ -358,13 +359,80 @@ unique_ptr<CompoundStatement> parseCompound()
 // }
 
 
+// unique_ptr<Declarations> parseDeclarations()
+// {
+//   auto d = make_unique<Declarations>();
 
+//   bool var_list = true;
+
+//   if(peek()!= VAR)
+//   {
+//     throw runtime_error("expected VAR after IDENT since there was no BEGIN");
+//   }
+//   expect(VAR,"Variable declaratons");
+
+//   while(var_list)
+//   {
+   
+//     if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
+
+
+//     expect(IDENT,"variable name");
+
+//     d->name = peekLex; // stoes the name of the variable. 
+   
+    
+//     if(peek() != COLON){throw runtime_error("Expected colon (:) after IDENT");}
+
+//     expect(COLON,"Colon");
+
+//     d->type = peek(); // stores the token type. 
+//     //std::cout << peekLex << std::endl;
+
+//     if(d->type != INTEGER && d->type != REAL) // if the variable is neither a INTERGER or a REAL number it errors out. 
+//     {
+//       throw runtime_error("Expected INTEGER or REAL after COLON (:)");
+//     } 
+//     expect(d->type,"Value of intialized variable");
+
+//     //cout << peekLex << endl;
+//     if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");} //errors out if no SEMICOLON
+
+//     expect(SEMICOLON,"SEMICOLON after variable type");
+
+//     // auto it = symbolTable.find(var_name);
+
+//     // if(it!= symbolTable.end())
+//     // {
+//     //   throw runtime_error("duplicate");
+//     // }
+
+//     // if(var_type == INTEGER)
+//     // {
+//     //   symbolTable[var_name] = 0;
+//     // }
+//     // else
+//     // {
+//     //   symbolTable[var_name] = 0.0;
+//     // }
+
+//     //std::cout << "right before IDENT at the end " << peekLex << std::endl;
+//     if(peek()!= IDENT)
+//     {
+//       var_list = false;
+//     }
+
+//   }
+
+//   return d;
+
+// }
 
 
 unique_ptr<Block> parseBlock()
 {
   auto b =  make_unique<Block>();
-
+  //auto d = make_unique<Declarations>();
   string var_name; 
   Token var_type; 
   bool var_list = true;
@@ -390,7 +458,7 @@ unique_ptr<Block> parseBlock()
     expect(IDENT,"variable name");
 
     var_name = peekLex; // stoes the name of the variable. 
-
+   
     
     if(peek() != COLON){throw runtime_error("Expected colon (:) after IDENT");}
 
@@ -426,7 +494,7 @@ unique_ptr<Block> parseBlock()
       symbolTable[var_name] = 0.0;
     }
 
-    //std::cout << "right before IDENT at the end " << peekLex << std::endl;
+    std::cout << "right before IDENT at the end " << peekLex << std::endl;
     if(peek()!= IDENT)
     {
       var_list = false;
@@ -445,38 +513,6 @@ unique_ptr<Block> parseBlock()
   
   b->comp = parseCompound();
 
-
-
-
-
-
-
-
- // unique_ptr<CompoundStatement> c = 
-
-
-
-
-
-
-  // if(peek()!= WRITE)
-  // {
-  //   throw runtime_error("Parse error: expected WRITE after BEGIN");
-  // }
-
- // expect(WRITE,"string to print");
-
-
-
- //b->write = parseWrite();
-
- 
-//  if(peek() != END)
-//  {
-//     throw runtime_error("Parse error: expected END to close block");
-//  }
-
-//  expect(END,"End of file");
 
  return b;
 
