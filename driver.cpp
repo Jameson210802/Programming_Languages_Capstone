@@ -172,6 +172,15 @@ int main(int argc, char** argv)
         root->interpret(cout);
         banner("INTERPRETATION COMPLETE", C_YBOLD);
 
+        if(FLAG_SYMBOLS)
+        {
+            banner("BEGIN SYMBOL TABLE", C_CYAN);
+
+
+            root->print_symbols(cout);
+
+            banner("SYMBOL TABLE COMPLETE :) ", C_CYAN);
+        } 
         // Display success
         banner("Program executed successfully", C_GREEN);
     }

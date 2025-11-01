@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <set>
+#include <typeinfo> // got from https://www.geeksforgeeks.org/cpp/type-inference-in-c-auto-and-decltype/
 #include "lexer.h"
 #include "ast.h"
 #include "debug.h"
@@ -248,10 +249,10 @@ unique_ptr<Statement> parseStatement()
 
     default:
 
-      runtime_error("Expected either READ,WRITE,IDENT, or BEGIN in statement");
+      throw runtime_error("Expected either READ,WRITE,IDENT, or BEGIN in statement");
 
       break;
-    }
+  }
 
 
   
@@ -263,7 +264,7 @@ unique_ptr<CompoundStatement> parseCompound()
 {
 
  auto c = make_unique<CompoundStatement>();
- Token type; 
+ //Token type; 
 
   if(peek() != TOK_BEGIN)
   {
@@ -488,13 +489,14 @@ unique_ptr<Block> parseBlock()
     if(var_type == INTEGER)
     {
       symbolTable[var_name] = 0;
+
     }
     else
     {
       symbolTable[var_name] = 0.0;
     }
 
-    std::cout << "right before IDENT at the end " << peekLex << std::endl;
+    //std::cout << "right before IDENT at the end " << peekLex << std::endl;
     if(peek()!= IDENT)
     {
       var_list = false;

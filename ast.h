@@ -19,6 +19,9 @@
 
 using namespace std;
 
+// note got the holds_alternative  from: https://www.geeksforgeeks.org/cpp/std-variant-in-cpp-17/
+
+
 // -----------------------------------------------------------------------------
 // Pretty printer
 // -----------------------------------------------------------------------------
@@ -68,8 +71,9 @@ struct Read : Statement
 
   void print_tree(ostream&os,string prefix) override
   {
+    //(void)prefix;
     
-    ast_line(os,"    ",true,"read " +target);
+    ast_line(os,prefix,true,"read " +target);
 
   }
 
@@ -202,13 +206,16 @@ struct Write:Statement
     }
     
   }
+
   void print_tree(ostream& os,string prefix)
   {
 
     ast_line(os,prefix,true,"Write");
-    ast_line(os,prefix+"       ",true,"content: " +content);
+    ast_line(os,prefix+"    ",true,"content: " +content);
     
   }
+
+ 
 
 };
 
@@ -265,10 +272,35 @@ struct Block
 
  // unique_ptr<Write> write;
   unique_ptr<CompoundStatement> comp;
+  map<string,int>integer_table;
+  map<string,double>real_table;
+  //vector<int> //TODO look at later
   //unique_ptr<Declarations> declare;
   void print_tree(ostream& os,const char *tree,bool status)
   {
+
     ast_line(os,tree,status,"Block"); //TODO might need to remove this line. 
+    ast_line(os,"    ",false,"Declearatons");
+
+    for(auto & pair: symbolTable)
+    {
+      if(holds_alternative<int>(pair.second)) 
+      {
+        //string value_to_send = to_string(pair.second);
+        ast_line(os,"    |   ",false, pair.first + ": INTEGER = 0");
+      }
+      else if (holds_alternative<double>(pair.second))
+      {
+        ast_line(os,"    |   ",false, pair.first + ": REAL = 0.0");
+      }
+      
+    }
+    
+    // for(auto & pair: integer_table)
+    // {
+    //   string value_to_send = to_string(pair.second);
+    //   ast_line(os,"     ",true, pair.first + ": INTEGER =" + value_to_send);
+    // }
 
 
     //if(declare) declare->print_tree(os," ");
@@ -290,6 +322,7 @@ struct Program
 {
   string name; 
   unique_ptr<Block> block;
+
   void print_tree(ostream& os)
   {
     cout << "Program\n";
@@ -303,7 +336,23 @@ struct Program
   }
   void interpret(ostream& out) { if (block) block->interpret(out); }
 
-  
+  void print_symbols(ostream& out)
+  {
+    for(auto & pair: symbolTable)
+    {
+      if(holds_alternative<int>(pair.second)) 
+      {
+        //string value_to_send = to_string(pair.second);
+        //ast_line(os,"    |   ",false, pair.first + ": INTEGER = " +);
+        out << pair.first << ": INTEGER = " << get<int>(pair.second)<< "\n";
+      }
+      else if (holds_alternative<double>(pair.second))
+      {
+        out << pair.first << ": REAL = " << get<double>(pair.second)<< "\n";
+      }
+      
+    }
+  }
   friend ostream& operator<<(ostream &out, unique_ptr<Program>& root)
   {
 
