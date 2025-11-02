@@ -272,8 +272,6 @@ struct Block
 
  // unique_ptr<Write> write;
   unique_ptr<CompoundStatement> comp;
-  map<string,int>integer_table;
-  map<string,double>real_table;
   //vector<int> //TODO look at later
   //unique_ptr<Declarations> declare;
   void print_tree(ostream& os,const char *tree,bool status)
@@ -296,14 +294,6 @@ struct Block
       
     }
     
-    // for(auto & pair: integer_table)
-    // {
-    //   string value_to_send = to_string(pair.second);
-    //   ast_line(os,"     ",true, pair.first + ": INTEGER =" + value_to_send);
-    // }
-
-
-    //if(declare) declare->print_tree(os," ");
     if(comp) comp->print_tree(os," ");
   }
 

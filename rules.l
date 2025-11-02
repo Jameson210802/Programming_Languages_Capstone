@@ -8,6 +8,7 @@
 
 %{
 #include "lexer.h"
+//int line_number = 1
 %}
 
 %%
@@ -15,6 +16,7 @@
 
 PROGRAM        {return PROGRAM;}
 [\t\r\n]+            {        }
+
 " "                 {   }
 VAR               {return VAR;}
 

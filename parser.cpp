@@ -25,6 +25,8 @@ string peekLex;
 
 inline const char* tname(Token t) { return tokName(t); }
 
+//extern int line_number;
+
 
 
 Token peek() 
@@ -87,16 +89,26 @@ unique_ptr<Write> parseWrite()
     throw runtime_error("Parse error: expected STRINGLIT or IDENT inside WRITE(...)");
   }
 
-  
-  
-
-  
-
-
-  
   expect(s->type,"STRINGLIT or IDENT");
   //cout << "content for " << peekLex << endl;
   s->content = peekLex;
+
+  if(s->type == IDENT)
+  {
+    auto confirm = symbolTable.find(s->content);
+
+    if(confirm == symbolTable.end())
+    {
+    throw runtime_error("IDENT was not declared to WRITE to");
+    }
+  }
+  
+
+  
+
+
+  
+
 
   
   if(peek() != CLOSEPAREN)
@@ -117,6 +129,7 @@ unique_ptr<Read> parseRead()
 
   auto r = make_unique<Read>();
 
+  
 
   // if(peek() != READ)
   // {
@@ -142,6 +155,15 @@ unique_ptr<Read> parseRead()
 
   expect(IDENT,"IDENT");
   r->target = peekLex;
+
+  auto confirm = symbolTable.find(r->target);
+
+  if(confirm == symbolTable.end())
+  {
+    throw runtime_error("IDENT was not declared to read");
+  }
+
+
   if(peek()!=CLOSEPAREN)
   {
     throw runtime_error("expected CLOSEPAREN after IDENT");
@@ -167,6 +189,13 @@ unique_ptr<Assign> parseAssign()
  
   expect(IDENT,"var name for assign");
   a->id = peekLex;
+
+  auto confirm = symbolTable.find(a->id);
+
+  if(confirm == symbolTable.end())
+  {
+    throw runtime_error("IDENT was not declared to Assign");
+  }
 
   if(peek() != ASSIGN)
   {
@@ -437,6 +466,8 @@ unique_ptr<Block> parseBlock()
   string var_name; 
   Token var_type; 
   bool var_list = true;
+  int current_line; 
+  int compare_line = 0;
 
   if(peek() == TOK_BEGIN){var_list = false;}
   
@@ -452,7 +483,8 @@ unique_ptr<Block> parseBlock()
 
   while(var_list)
   {
-   
+    current_line = yylineno;
+    if(current_line == compare_line){throw runtime_error("tried to declare two variables on the same line");} // checks to see if we are on the same line as the last declaration.
     if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
 
 
@@ -478,7 +510,7 @@ unique_ptr<Block> parseBlock()
     if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");} //errors out if no SEMICOLON
 
     expect(SEMICOLON,"SEMICOLON after variable type");
-
+    compare_line = yylineno;
     auto it = symbolTable.find(var_name);
 
     if(it!= symbolTable.end())
@@ -501,6 +533,11 @@ unique_ptr<Block> parseBlock()
     {
       var_list = false;
     }
+
+
+    
+
+   
 
   }
 
