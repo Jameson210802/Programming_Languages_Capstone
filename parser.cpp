@@ -22,8 +22,7 @@ using namespace std;
 bool   havePeek = false;
 Token  peekTok  = 0;
 string peekLex;
-int current_line;
-int last_line = -1;
+
 inline const char* tname(Token t) { return tokName(t); }
 
 //extern int line_number;
@@ -182,8 +181,7 @@ unique_ptr<Assign> parseAssign()
   //int int_val;
   //double double_val;
   //cout <<  <<" last line" << last_line;
-  current_line = yylineno;
-  if(current_line == last_line){throw runtime_error("Can not assign two variables on the same line");}
+ 
   
   auto a = make_unique<Assign>();
   if(peek() != IDENT)
@@ -220,7 +218,7 @@ unique_ptr<Assign> parseAssign()
   //cout << "we made it before expect " << peekLex << endl; 
   expect(tok,"Value to be assigned to variable");
   a->value = peekLex;
-  last_line = yylineno;
+
   //cout << "we made it past expect " << peekLex << endl;
 
   //TODO FIGURE OUT HOW TO DO IDENT with assign
@@ -471,8 +469,7 @@ unique_ptr<Block> parseBlock()
   string var_name; 
   Token var_type; 
   bool var_list = true;
-  int current_line; 
-  int compare_line = 0;
+
 
   if(peek() == TOK_BEGIN){var_list = false;}
   
@@ -488,8 +485,7 @@ unique_ptr<Block> parseBlock()
 
   while(var_list)
   {
-    current_line = yylineno;
-    if(current_line == compare_line){throw runtime_error("tried to declare two variables on the same line");} // checks to see if we are on the same line as the last declaration.
+
     if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
 
 
@@ -515,7 +511,7 @@ unique_ptr<Block> parseBlock()
     if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");} //errors out if no SEMICOLON
 
     expect(SEMICOLON,"SEMICOLON after variable type");
-    compare_line = yylineno;
+
     auto it = symbolTable.find(var_name);
 
     if(it!= symbolTable.end())
