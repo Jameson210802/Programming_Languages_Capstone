@@ -22,7 +22,8 @@ using namespace std;
 bool   havePeek = false;
 Token  peekTok  = 0;
 string peekLex;
-
+int current_line;
+int last_line = -1;
 inline const char* tname(Token t) { return tokName(t); }
 
 //extern int line_number;
@@ -180,7 +181,10 @@ unique_ptr<Assign> parseAssign()
   //Token value_type;
   //int int_val;
   //double double_val;
-
+  //cout <<  <<" last line" << last_line;
+  current_line = yylineno;
+  if(current_line == last_line){throw runtime_error("Can not assign two variables on the same line");}
+  
   auto a = make_unique<Assign>();
   if(peek() != IDENT)
   {
@@ -216,7 +220,7 @@ unique_ptr<Assign> parseAssign()
   //cout << "we made it before expect " << peekLex << endl; 
   expect(tok,"Value to be assigned to variable");
   a->value = peekLex;
-
+  last_line = yylineno;
   //cout << "we made it past expect " << peekLex << endl;
 
   //TODO FIGURE OUT HOW TO DO IDENT with assign
@@ -270,6 +274,7 @@ unique_ptr<Statement> parseStatement()
     
     case IDENT: // if token is an Identifier goes to assign
       return parseAssign();
+  
       break;
 
     case TOK_BEGIN:
