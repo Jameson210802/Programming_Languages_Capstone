@@ -49,6 +49,8 @@
 #define TOK_OR      3011
 #define TOK_AND     3012
 #define CUSTOM_OPER 3013
+#define INCREMENT   3014
+#define DECREMENT   3015
 // ---------------------------------------------------------------------------
 // Useful abstractions
 // ---------------------------------------------------------------------------
@@ -107,7 +109,9 @@ inline const char* tokName(Token t) {
     case TOK_NOT:       return "NOT";
     case TOK_OR:        return "OR";
     case TOK_AND:       return "AND";
-    case CUSTOM_OPER:   return "CUSTOM OPERATOR";     
+    case CUSTOM_OPER:   return "CUSTOM OPERATOR"; 
+    case INCREMENT:     return "INCREMENT";
+    case DECREMENT:     return "DECREMENT";   
     case IDENT:         return "IDENT";
     case INTLIT:        return "INTLIT";
     case FLOATLIT:      return "FLOATLIT";
