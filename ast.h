@@ -16,6 +16,7 @@
 #include <map>
 #include <variant>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -55,12 +56,13 @@ struct IntLitNode : valueNode {
 
   void print_tree(ostream& os,string prefix) override
   {
-
+    ast_line(os,prefix,true,"Int " + to_string(v));
   }
 
   Value interpret(ostream& out) override
   {
-
+    (void)out;
+    return v;
   }
 
 };
@@ -68,9 +70,15 @@ struct IntLitNode : valueNode {
 struct RealLitNode : valueNode { 
   double v;
 
-  void print_tree(ostream& os,string prefix) override
+ void print_tree(ostream& os,string prefix) override
   {
+    ast_line(os,prefix,true,"Real " + to_string(v));
+  }
 
+  Value interpret(ostream& out) override
+  {
+    (void)out;
+    return v;
   }
 
 };
@@ -84,14 +92,36 @@ struct IdentLitNode : valueNode {
 
   }
 
+
+  
+
 };
 
 
-struct UnaryOP : valueNode { Token op; unique_ptr<valueNode> sub;};
+struct UnaryOP : valueNode { 
+
+
+
+  Token op; unique_ptr<valueNode> sub;
+
+
+
+
+
+
+
+};
+
+
 
 struct BinaryOP : valueNode { 
   Token op; unique_ptr<valueNode> left, right;
 
+  void print_tree(ostream&os,string prefix)
+  {
+    left->print_tree(os,prefix);
+    right->print_tree(os,prefix);
+  }
 
   Value interpret(ostream&out) override {
 
@@ -133,7 +163,8 @@ struct BinaryOP : valueNode {
       }
       case CUSTOM_OPER: {
 
-        
+        return pow(ad,bd);
+
       }
 
     }

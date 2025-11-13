@@ -70,6 +70,10 @@ unique_ptr<Assign> parseAssign();
 unique_ptr<CompoundStatement> parseCompound();
 unique_ptr<Block> parseBlock();
 unique_ptr<Program> parseProgram();
+unique_ptr<valueNode> parseValue();
+unique_ptr<valueNode> parseTerm();
+unique_ptr<valueNode> parseFactor();
+
 //unique_ptr<Declarations> parseDeclarations();
 
 
@@ -460,6 +464,73 @@ unique_ptr<CompoundStatement> parseCompound()
 //   return d;
 
 // }
+
+
+unique_ptr<valueNode> parseTerm()
+{
+  auto node = parseFactor();
+  
+  while(true) {
+
+    Token t = peek();
+
+    if (t == MULTIPLY || t == DIVIDE || t = MOD || t == CUSTOM_OPER)
+    {
+     
+      Token op = t;
+
+      expect(t,"multiplicative operator (*,/,MOD,^^) in term");
+      auto rhs = parseFactor();
+
+      auto bin = make_unique<BinaryOP>();
+
+      bin->op = op;
+      bin->left = move(node);
+      bin->right = move(rhs);
+      node = move(bin);
+    }
+    else {
+      break;
+    }
+  }
+
+  return node;
+
+}
+
+
+
+
+
+unique_ptr<valueNode> parseValue()
+{
+  auto node = parseTerm();
+
+  while(true) {
+
+    Token t = peek();
+    
+    if(t == PLUS || t == MINUS) {
+
+      Token op = t;
+      expect(t, "additive operator (+,-) in Value");
+      auto rhs = parseTerm();
+
+      auto bin = make_unique<BinaryOP>();
+
+      bin->op = op;
+
+      bin->left = move(node);
+      bin->right = move(rhs);
+
+      node = move(bin);
+    }
+    else {
+      break;
+    }
+  }
+  return node;
+}
 
 
 unique_ptr<Block> parseBlock()
