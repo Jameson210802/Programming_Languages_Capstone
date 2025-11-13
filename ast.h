@@ -89,11 +89,26 @@ struct IdentLitNode : valueNode {
 
   void print_tree(ostream& os,string prefix) override
   {
+    ast_line(os,prefix,true,"Ident " + name);
+  }
+
+  Value interpret(ostream& out)
+  {
+    (void) out;
+
+
+    auto it = symbolTable.find(name);
+
+    if(it == symbolTable.end()){throw runtime_error("unable to find value in symbol table");}
+
+    return it->second;
+
+
 
   }
 
 
-  
+
 
 };
 
@@ -104,7 +119,55 @@ struct UnaryOP : valueNode {
 
   Token op; unique_ptr<valueNode> sub;
 
+  void print_tree(ostream&os,string prefix) override {
 
+
+    sub->print_tree(os,prefix);
+  }
+
+  Value interpret(ostream&out) override {
+
+    (void) out;
+
+
+    Value val = sub->interpret(out);
+
+    bool is_Int = holds_alternative<int>(val);
+    double d_val = as_double(val);
+    
+
+    
+
+    switch(op)
+    {
+      case INCREMENT: {
+        if(is_Int){
+          
+          //int find_val = get<int>(val);
+          //auto it = symbolTable.find(find_val);
+          //auto it = symbolTable.find(find_val);
+
+          return ++get<int>(val);
+
+
+
+        }
+
+        return ++d_val;
+        
+
+      }
+       case DECREMENT: {
+        if(is_Int) return --get<int>(val);
+
+        return --d_val;
+
+      }
+    }
+
+
+
+  }
 
 
 
@@ -158,8 +221,6 @@ struct BinaryOP : valueNode {
         
         return as_int_strict(a) % as_int_strict(b);
 
-        
-        
       }
       case CUSTOM_OPER: {
 
@@ -251,7 +312,10 @@ struct Assign : Statement
   unique_ptr<valueNode> rhs;
 
 
-  void print_tree(ostream&os,string prefix) override;
+  void print_tree(ostream&os,string prefix) override
+  {
+    rhs->print_tree(os,prefix);
+  }
 
   void interpret(ostream&out) override
   {

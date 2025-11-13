@@ -179,6 +179,179 @@ unique_ptr<Read> parseRead()
   return r;
   
 }
+
+
+
+unique_ptr<valueNode> parsePrimary()
+{
+
+  Token t = peek();
+
+  if(t == FLOATLIT)
+  {
+    expect(t,"FLOATINT in primary");
+
+    auto node = make_unique<RealLitNode>();
+
+    node->v = stod(peekLex);
+
+    return node;
+
+  }
+  if(t == INTLIT)
+  {
+
+    expect(t,"INTLIT in primary");
+
+    auto node = make_unique<RealLitNode>();
+
+    node->v = stoi(peekLex);
+
+    return node;
+
+  }
+  if(t == IDENT)
+  {
+    expect(t,"IDENT in primary");
+
+
+    auto node = make_unique<IdentLitNode>();
+
+    node->name = peekLex;
+
+    return node;
+  }
+
+  t = peek();
+  
+
+  //dbg::line("This is the token value: " + peekLex+ " and this is the token: ");
+  //cout << "this is the token" << t << "\n";
+  if(t == OPENPAREN)
+  {
+    expect(t,"Open Parentheses in Primary");
+    
+    auto node = parseValue();
+
+    expect(t,"Open Parentheses in Primary");
+
+    return node;
+  
+  }
+
+  
+
+  
+
+  //if(t== CLOSEPAREN){expect(t,"Open Parentheses in Primary");}
+
+  //todo might need to add runtime errors
+
+  //return node;
+
+
+
+}
+
+unique_ptr<valueNode> parseFactor()
+{
+  Token t = peek();
+  if(t==INCREMENT || t == DECREMENT || t == MINUS)
+  {
+    Token op = t;
+    expect(t,"unary operator (++/--/-) in factor");
+
+
+    auto p = parsePrimary();
+
+    auto node = make_unique<UnaryOP>();
+
+    node->op = op;
+
+    node->sub = move(p);
+
+    return node;
+
+
+  }
+
+  return parsePrimary();
+}
+
+
+
+
+
+
+
+
+unique_ptr<valueNode> parseTerm()
+{
+  auto node = parseFactor();
+  
+  while(true) {
+
+    Token t = peek();
+
+    if (t == MULTIPLY || t == DIVIDE || t == MOD || t == CUSTOM_OPER)
+    {
+     
+      Token op = t;
+
+      expect(t,"multiplicative operator (*,/,MOD,^^) in term");
+      auto rhs = parseFactor();
+
+      auto bin = make_unique<BinaryOP>();
+
+      bin->op = op;
+      bin->left = move(node);
+      bin->right = move(rhs);
+      node = move(bin);
+    }
+    else {
+      break;
+    }
+  }
+
+  return node;
+
+}
+
+
+
+
+
+unique_ptr<valueNode> parseValue()
+{
+  auto node = parseTerm();
+
+  while(true) {
+
+    Token t = peek();
+
+    if(t == PLUS || t == MINUS) {
+
+      Token op = t;
+      expect(t, "additive operator (+,-) in Value");
+      auto rhs = parseTerm();
+
+      auto bin = make_unique<BinaryOP>();
+
+      bin->op = op;
+
+      bin->left = move(node);
+      bin->right = move(rhs);
+
+      node = move(bin);
+    }
+    else {
+      break;
+    }
+  }
+  return node;
+}
+
+
 unique_ptr<Assign> parseAssign()
 {
  // string var_name; 
@@ -189,6 +362,7 @@ unique_ptr<Assign> parseAssign()
  
   
   auto a = make_unique<Assign>();
+
   if(peek() != IDENT)
   {
     throw runtime_error("expected an IDENT for Assign");
@@ -196,7 +370,7 @@ unique_ptr<Assign> parseAssign()
  
   expect(IDENT,"var name for assign");
   a->id = peekLex;
-
+  
   auto confirm = symbolTable.find(a->id);
 
   if(confirm == symbolTable.end())
@@ -210,7 +384,8 @@ unique_ptr<Assign> parseAssign()
   }
   expect(ASSIGN,"Assign(:=) operator");
   Token tok = peek();
-  a->type = tok;
+  //a->type = tok;
+
   
   if(tok != INTLIT && tok != FLOATLIT && tok!= IDENT)
   {
@@ -222,7 +397,8 @@ unique_ptr<Assign> parseAssign()
   //cout << "this is the token" << tok << endl;
   //cout << "we made it before expect " << peekLex << endl; 
   expect(tok,"Value to be assigned to variable");
-  a->value = peekLex;
+  //a->value = peekLex;
+  a->rhs = parseValue();
 
   //cout << "we made it past expect " << peekLex << endl;
 
@@ -466,170 +642,6 @@ unique_ptr<CompoundStatement> parseCompound()
 
 // }
 
-
-unique_ptr<valueNode> parsePrimary()
-{
-
-  Token t = peek();
-
-  if(t == FLOATLIT)
-  {
-    expect(t,"FLOATINT in primary");
-
-    auto node = make_unique<RealLitNode>();
-
-    node->v = stod(peekLex);
-
-    return node;
-
-  }
-  if(t == INTLIT)
-  {
-
-    expect(t,"INTLIT in primary");
-
-    auto node = make_unique<RealLitNode>();
-
-    node->v = stoi(peekLex);
-
-    return node;
-
-  }
-  if(t == IDENT)
-  {
-    expect(t,"IDENT in primary");
-
-
-    auto node = make_unique<IdentLitNode>();
-
-    node->name = peekLex;
-
-    return node;
-  }
-
-
-  if(t == OPENPAREN)
-  {
-    expect(t,"Open Parentheses in Primary");
-    
-    unique_ptr<valueNode> node =  parseValue();
-
-    expect(t,"Open Parentheses in Primary");
-
-    return node;
-  
-  }
-
-
-  
-
-  //if(t== CLOSEPAREN){expect(t,"Open Parentheses in Primary");}
-
-  //todo might need to add runtime errors
-
-  //return node;
-
-
-
-}
-
-unique_ptr<valueNode> parseFactor()
-{
-  Token t = peek();
-  if(t==INCREMENT || t == DECREMENT || t == MINUS)
-  {
-    Token op = t;
-    expect(t,"unary operator (++/--/-) in factor");
-
-
-    auto p = parsePrimary();
-
-    auto node = make_unique<UnaryOP>();
-
-    node->op = op;
-
-    node->sub = move(p);
-
-    return node;
-
-
-  }
-
-  return parsePrimary();
-}
-
-
-
-
-
-
-
-
-unique_ptr<valueNode> parseTerm()
-{
-  auto node = parseFactor();
-  
-  while(true) {
-
-    Token t = peek();
-
-    if (t == MULTIPLY || t == DIVIDE || t == MOD || t == CUSTOM_OPER)
-    {
-     
-      Token op = t;
-
-      expect(t,"multiplicative operator (*,/,MOD,^^) in term");
-      auto rhs = parseFactor();
-
-      auto bin = make_unique<BinaryOP>();
-
-      bin->op = op;
-      bin->left = move(node);
-      bin->right = move(rhs);
-      node = move(bin);
-    }
-    else {
-      break;
-    }
-  }
-
-  return node;
-
-}
-
-
-
-
-
-unique_ptr<valueNode> parseValue()
-{
-  auto node = parseTerm();
-
-  while(true) {
-
-    Token t = peek();
-
-    if(t == PLUS || t == MINUS) {
-
-      Token op = t;
-      expect(t, "additive operator (+,-) in Value");
-      auto rhs = parseTerm();
-
-      auto bin = make_unique<BinaryOP>();
-
-      bin->op = op;
-
-      bin->left = move(node);
-      bin->right = move(rhs);
-
-      node = move(bin);
-    }
-    else {
-      break;
-    }
-  }
-  return node;
-}
 
 
 unique_ptr<Block> parseBlock()

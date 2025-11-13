@@ -44,14 +44,19 @@ REAL            {return REAL;}
 
 :                  {return COLON;}
 
-+                 {return PLUS;}
--                 {return MINUS;}
-*                 {return MULTIPLY;}
-/                 {return DIVIDE;}
+\+                 {return PLUS;}
+
+\-                 {return MINUS;}
+
+\*                 {return MULTIPLY;}
+
+\/                 {return DIVIDE;}
+
 MOD               {return MOD;}
+
 ^^                {return CUSTOM_OPER;}
-++                {return INCREMENT;}
---                {return DECREMENT;}
+\+\+                {return INCREMENT;}
+\-\-                {return DECREMENT;}
 
 
 
