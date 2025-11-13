@@ -73,6 +73,7 @@ unique_ptr<Program> parseProgram();
 unique_ptr<valueNode> parseValue();
 unique_ptr<valueNode> parseTerm();
 unique_ptr<valueNode> parseFactor();
+unique_ptr<valueNode> parsePrimary();
 
 //unique_ptr<Declarations> parseDeclarations();
 
@@ -466,6 +467,82 @@ unique_ptr<CompoundStatement> parseCompound()
 // }
 
 
+unique_ptr<valueNode> parsePrimary()
+{
+
+  Token t = peek();
+
+  if(t == FLOATLIT)
+  {
+    expect(t,"FLOATINT in primary");
+
+    auto node = make_unique<RealLitNode>();
+
+    node->v = stod(peekLex);
+
+    
+
+  }
+  if(t == INTLIT)
+  {
+
+    expect(t,"INTLIT in primary");
+
+    auto node = make_unique<RealLitNode>();
+
+    node->v = stoi(peekLex);
+
+    
+
+  }
+  if(t == IDENT)
+  {
+    expect(t,"IDENT in primary");
+
+
+    auto node = make_unique<IdentLitNode>();
+
+    node->name = peekLex;
+
+  }
+
+
+
+
+}
+
+unique_ptr<valueNode> parseFactor()
+{
+  Token t = peek();
+  if(t==INCREMENT || t == DECREMENT || t == MINUS)
+  {
+    Token op = t;
+    expect(t,"unary operator (++/--/-) in factor");
+
+
+    auto p = parsePrimary();
+
+    auto node = make_unique<UnaryOP>();
+
+    node->op = op;
+
+    node->sub = move(p);
+
+    return node;
+
+
+  }
+
+  return parsePrimary();
+}
+
+
+
+
+
+
+
+
 unique_ptr<valueNode> parseTerm()
 {
   auto node = parseFactor();
@@ -474,7 +551,7 @@ unique_ptr<valueNode> parseTerm()
 
     Token t = peek();
 
-    if (t == MULTIPLY || t == DIVIDE || t = MOD || t == CUSTOM_OPER)
+    if (t == MULTIPLY || t == DIVIDE || t == MOD || t == CUSTOM_OPER)
     {
      
       Token op = t;
@@ -509,7 +586,7 @@ unique_ptr<valueNode> parseValue()
   while(true) {
 
     Token t = peek();
-    
+
     if(t == PLUS || t == MINUS) {
 
       Token op = t;
