@@ -480,7 +480,7 @@ unique_ptr<valueNode> parsePrimary()
 
     node->v = stod(peekLex);
 
-    
+    return node;
 
   }
   if(t == INTLIT)
@@ -492,7 +492,7 @@ unique_ptr<valueNode> parsePrimary()
 
     node->v = stoi(peekLex);
 
-    
+    return node;
 
   }
   if(t == IDENT)
@@ -504,8 +504,30 @@ unique_ptr<valueNode> parsePrimary()
 
     node->name = peekLex;
 
+    return node;
   }
 
+
+  if(t == OPENPAREN)
+  {
+    expect(t,"Open Parentheses in Primary");
+    
+    unique_ptr<valueNode> node =  parseValue();
+
+    expect(t,"Open Parentheses in Primary");
+
+    return node;
+  
+  }
+
+
+  
+
+  //if(t== CLOSEPAREN){expect(t,"Open Parentheses in Primary");}
+
+  //todo might need to add runtime errors
+
+  //return node;
 
 
 
