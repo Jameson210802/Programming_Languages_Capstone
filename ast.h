@@ -30,15 +30,128 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
 }
 
 inline map<string, variant<int,double>> symbolTable;
+using Value = variant<int,double>;
 
-// TODO: Define and Implement structures to hold each data node
-// TODO: Overload << for Program
+inline double as_double(const Value& v){
+  return holds_alternative<int>(v) ? static_cast<double>(get<int>(v)) : get<double>(v);
+}
+
+inline int as_int_strict(const Value& v){
+  if (!holds_alternative<int>(v)) throw runtime_error("MOD requires INTEGER opperands");
+  return get<int>(v);
+}
+
+
+
+struct valueNode {
+
+  virtual Value interpret(ostream&  out)=0;
+  virtual void print_tree(ostream& os,string prefix)=0;
+};
+
+
+struct IntLitNode : valueNode { 
+  int v;
+
+  void print_tree(ostream& os,string prefix) override
+  {
+
+  }
+
+  Value interpret(ostream& out) override
+  {
+
+  }
+
+};
+
+struct RealLitNode : valueNode { 
+  double v;
+
+  void print_tree(ostream& os,string prefix) override
+  {
+
+  }
+
+};
+
+struct IdentLitNode : valueNode { 
+  
+  string name;
+
+  void print_tree(ostream& os,string prefix) override
+  {
+
+  }
+
+};
+
+
+struct UnaryOP : valueNode { Token op; unique_ptr<valueNode> sub;};
+
+struct BinaryOP : valueNode { 
+  Token op; unique_ptr<valueNode> left, right;
+
+
+  Value interpret(ostream&out) override {
+
+    (void)out;
+
+
+    Value a = left->interpret(out);
+    Value b = right->interpret(out);
+
+    bool bothInt = holds_alternative<int>(a) && holds_alternative<int>(b);
+    double ad = as_double(a);
+    double bd = as_double(b);
+
+    switch(op) {
+
+      case PLUS: {
+        if (bothInt){return get<int>(a)+ get<int>(b);}
+        return ad + bd;
+      }
+      case MINUS: {
+        if (bothInt){return get<int>(a) - get<int>(b);}
+        return ad * bd;
+      }
+      case MULTIPLY: {
+        if (bothInt){return get<int>(a)+ get<int>(b);}
+        return ad * bd;
+      }
+      case DIVIDE: {
+        return ad / bd;
+      }
+      case MOD:{
+
+        // if (bothInt){return get<int>(a) % get<int>(b);}
+        
+        return as_int_strict(a) % as_int_strict(b);
+
+        
+        
+      }
+      case CUSTOM_OPER: {
+
+        
+      }
+
+    }
+
+  }
+
+
+
+
+};
+
+
+
+
 
 
 struct Statement
 {
-
-
 
   virtual void interpret(ostream& out)=0;
   virtual void print_tree(ostream& os,string prefix)=0;
@@ -101,58 +214,25 @@ struct Assign : Statement
 {
 
   string id; 
-  Token type;
-  string value;
+  //Token type;
+  //string value;
+
+  unique_ptr<valueNode> rhs;
 
 
+  void print_tree(ostream&os,string prefix) override;
 
-  void print_tree(ostream&os,string prefix) override
-  {
-    ast_line(os,prefix,false,"Assign := " + value);
-  }
-  
   void interpret(ostream&out) override
   {
     (void)out;
-    auto it = symbolTable.find(id);
-    auto ident_val = symbolTable.find(value);
-  
-    if(it != symbolTable.end())
+
+    auto it = symbolTable.find(id); // finds variable 
+
+    auto val = rhs->interpret(out); //gets the value of variable
+
+    if(it != symbolTable.end()) //checks to see if variable existed. 
     {
-
-      switch (type)
-      {
-        case INTLIT:
-          
-          it->second = stoi(value);
-
-          break;
-        case FLOATLIT:
-
-          it->second = stod(value);
-
-          break;
-        case IDENT: 
-
-          // gets the value of the identifier
-
-          if(ident_val != symbolTable.end())
-          {
-            it->second = ident_val->second; // Sets the variable equal to Identifer VAL := IDENT
-          }
-          else
-          {
-            throw runtime_error("was unable to find value to assign it to new variable");
-          }
-          break;
-          
-        default:
-        
-          throw runtime_error("Do not have one the nessarcy types to assign a veraible");
-
-          break;
-      }
-      
+      it->second = val; // stores value in variable.
     }
     else
     {
@@ -161,6 +241,67 @@ struct Assign : Statement
 
 
   }
+  
+
+
+  // void print_tree(ostream&os,string prefix) override
+  // {
+  //  // ast_line(os,prefix,false,"Assign := " + value);
+  // }
+
+  
+
+
+  // void interpret(ostream&out) override
+  // {
+  //   (void)out;
+  //   auto it = symbolTable.find(id);
+  //   auto ident_val = symbolTable.find(value);
+  
+  //   if(it != symbolTable.end())
+  //   {
+
+  //     switch (type)
+  //     {
+  //       case INTLIT:
+          
+  //         it->second = stoi(value);
+
+  //         break;
+  //       case FLOATLIT:
+
+  //         it->second = stod(value);
+
+  //         break;
+  //       case IDENT: 
+
+  //         // gets the value of the identifier
+
+  //         if(ident_val != symbolTable.end())
+  //         {
+  //           it->second = ident_val->second; // Sets the variable equal to Identifer VAL := IDENT
+  //         }
+  //         else
+  //         {
+  //           throw runtime_error("was unable to find value to assign it to new variable");
+  //         }
+  //         break;
+          
+  //       default:
+        
+  //         throw runtime_error("Do not have one the nessarcy types to assign a variable");
+
+  //         break;
+  //     }
+      
+  //   }
+  //   else
+  //   {
+  //     throw runtime_error("was unable to find value to assign it to new variable");
+  //   }
+
+
+  // }
 };
 
 
