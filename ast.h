@@ -115,8 +115,6 @@ struct IdentLitNode : valueNode {
 
 struct UnaryOP : valueNode { 
 
-
-
   Token op; unique_ptr<valueNode> sub;
 
   void print_tree(ostream&os,string prefix) override {
@@ -227,8 +225,11 @@ struct BinaryOP : valueNode {
       case MOD:{
 
         // if (bothInt){return get<int>(a) % get<int>(b);}
-        
-        return as_int_strict(a) % as_int_strict(b);
+        int ai = as_int_strict(a);
+        int bi = as_int_strict(b);
+        if(bi == 0){throw runtime_error("can not divide by zero");}
+       // return as_int_strict(a) % as_int_strict(b);
+       return ai % bi;
 
       }
       case CUSTOM_OPER: {
