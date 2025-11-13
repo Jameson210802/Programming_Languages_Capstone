@@ -198,7 +198,7 @@ unique_ptr<valueNode> parsePrimary()
     return node;
 
   }
-  if(t == INTLIT)
+  else if(t == INTLIT)
   {
 
     expect(t,"INTLIT in primary");
@@ -206,11 +206,12 @@ unique_ptr<valueNode> parsePrimary()
     auto node = make_unique<RealLitNode>();
 
     node->v = stoi(peekLex);
+    
 
     return node;
 
   }
-  if(t == IDENT)
+  else if(t == IDENT)
   {
     expect(t,"IDENT in primary");
 
@@ -221,25 +222,21 @@ unique_ptr<valueNode> parsePrimary()
 
     return node;
   }
-
-  t = peek();
-  
-
-  //dbg::line("This is the token value: " + peekLex+ " and this is the token: ");
-  //cout << "this is the token" << t << "\n";
-  if(t == OPENPAREN)
+  else if(t == OPENPAREN)
   {
     expect(t,"Open Parentheses in Primary");
     
     auto node = parseValue();
+    
+    t = peek();
 
     expect(t,"Open Parentheses in Primary");
 
     return node;
-  
   }
-
-  
+  else{
+    throw runtime_error("Did not find proper ");
+  }
 
   
 
@@ -383,21 +380,27 @@ unique_ptr<Assign> parseAssign()
     throw runtime_error("expected an ASSIGN (:=) after IDENT");
   }
   expect(ASSIGN,"Assign(:=) operator");
-  Token tok = peek();
+  //Token tok = peek();
   //a->type = tok;
 
   
-  if(tok != INTLIT && tok != FLOATLIT && tok!= IDENT)
-  {
-    throw runtime_error("Expected Either INTLIT or FLOATLIT or IDENT after assign");
-  }
+  // if(tok != INTLIT && tok != FLOATLIT && tok!= IDENT)
+  // {
+  //   throw runtime_error("Expected Either INTLIT or FLOATLIT or IDENT after assign");
+  // }
 
   //cout << "we are here before a->type" << endl;
   //  cout << a->type << endl;
   //cout << "this is the token" << tok << endl;
   //cout << "we made it before expect " << peekLex << endl; 
-  expect(tok,"Value to be assigned to variable");
+ //expect(tok,"Value to be assigned to variable");
   //a->value = peekLex;
+
+  // while(true)
+  // {
+  //   if(peek() != SEMICOLON || peek() != END){a->rhs = parseValue();}
+  //   else{break;}
+  // }
   a->rhs = parseValue();
 
   //cout << "we made it past expect " << peekLex << endl;

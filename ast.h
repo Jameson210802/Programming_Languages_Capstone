@@ -38,7 +38,7 @@ inline double as_double(const Value& v){
 }
 
 inline int as_int_strict(const Value& v){
-  if (!holds_alternative<int>(v)) throw runtime_error("MOD requires INTEGER opperands");
+  if (!holds_alternative<int>(v)) throw runtime_error("MOD requires INTEGER operands");
   return get<int>(v);
 }
 
@@ -127,12 +127,13 @@ struct UnaryOP : valueNode {
 
   Value interpret(ostream&out) override {
 
-    (void) out;
+    //(void) out;
 
 
     Value val = sub->interpret(out);
 
     bool is_Int = holds_alternative<int>(val);
+   // dbg::line("this is the val: " +is_Int);
     double d_val = as_double(val);
     
 
@@ -163,6 +164,14 @@ struct UnaryOP : valueNode {
         return --d_val;
 
       }
+      case MINUS: {
+        if(is_Int) return -get<int>(val);
+
+        return -d_val;
+
+      }
+      default:
+        throw runtime_error("Did not find any valid unary op");
     }
 
 
@@ -170,7 +179,7 @@ struct UnaryOP : valueNode {
   }
 
 
-
+  
 
 
 };
@@ -206,10 +215,10 @@ struct BinaryOP : valueNode {
       }
       case MINUS: {
         if (bothInt){return get<int>(a) - get<int>(b);}
-        return ad * bd;
+        return ad - bd;
       }
       case MULTIPLY: {
-        if (bothInt){return get<int>(a)+ get<int>(b);}
+        if (bothInt){return get<int>(a)* get<int>(b);}
         return ad * bd;
       }
       case DIVIDE: {
@@ -224,9 +233,12 @@ struct BinaryOP : valueNode {
       }
       case CUSTOM_OPER: {
 
+        if (bothInt){ double result = (pow(get<int>(a),get<int>(b))); return static_cast<int>(result);}
         return pow(ad,bd);
 
       }
+      default:
+        throw runtime_error("Did not find any valid unary op");
 
     }
 

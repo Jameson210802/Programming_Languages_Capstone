@@ -27,12 +27,13 @@ READ               {return READ;}
 INTEGER          {return INTEGER;}
 REAL            {return REAL;}
 
+MOD                {return MOD;}
+
+
 [A-Z][A-Z0-9]{8,} {return UNKNOWN;}
 [A-Z][A-Z0-9]{0,7}     {return IDENT;}
 '[^\'\n]{81,}'   {return UNKNOWN;} 
 '[^\'\n]{0,80}'   {return STRINGLIT;} 
-
-
 
 
 
@@ -43,20 +44,23 @@ REAL            {return REAL;}
 
 
 :                  {return COLON;}
-
+\+{2}             {return INCREMENT;}
+"--"           {return DECREMENT;}
 \+                 {return PLUS;}
 
 \-                 {return MINUS;}
 
 \*                 {return MULTIPLY;}
 
+
 \/                 {return DIVIDE;}
 
-MOD               {return MOD;}
 
-^^                {return CUSTOM_OPER;}
-\+\+                {return INCREMENT;}
-\-\-                {return DECREMENT;}
+
+
+"^^"             {return CUSTOM_OPER;}
+
+
 
 
 
