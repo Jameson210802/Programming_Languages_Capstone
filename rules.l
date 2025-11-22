@@ -29,9 +29,9 @@ REAL            {return REAL;}
 
 MOD                {return MOD;}
 
-AND            {return AND;}
-OR             {return OR;}
-NOT            {return NOT;}
+AND            {return TOK_AND;}
+OR             {return TOK_OR;}
+NOT            {return TOK_NOT;}
 
 
 
