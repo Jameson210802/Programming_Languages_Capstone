@@ -29,6 +29,29 @@ REAL            {return REAL;}
 
 MOD                {return MOD;}
 
+AND            {return AND;}
+OR             {return OR;}
+NOT            {return NOT;}
+
+
+
+
+IF             {return IF;}
+THEN           {return THEN;}
+ELSE           {return ELSE;}
+
+WHILE          {return WHILE;}
+
+\<             {return LESSTHAN;}
+\>             {return GREATERTHAN;}
+\=             {return EQUALTO;}
+\<\>          {return NOTEQUALTO;}
+
+
+
+
+
+
 
 [A-Z][A-Z0-9]{8,} {return UNKNOWN;}
 [A-Z][A-Z0-9]{0,7}     {return IDENT;}
