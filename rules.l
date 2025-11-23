@@ -47,7 +47,9 @@ WHILE          {return WHILE;}
 \=             {return EQUALTO;}
 \<\>          {return NOTEQUALTO;}
 
+SENIORITIS    {return CUSTOM;}
 
+\#\#          {             }
 
 
 

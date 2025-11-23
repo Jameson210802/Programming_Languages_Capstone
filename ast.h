@@ -33,6 +33,8 @@ inline void ast_line(ostream& os, string prefix, bool last, string label) {
 inline map<string, variant<int,double>> symbolTable;
 using Value = variant<int,double>;
 
+const double EPSILON = 0.00001;
+
 inline double as_double(const Value& v){
   return holds_alternative<int>(v) ? static_cast<double>(get<int>(v)) : get<double>(v);
 }
@@ -42,6 +44,14 @@ inline int as_int_strict(const Value& v){
   return get<int>(v);
 }
 
+
+
+
+struct expression {
+
+  virtual Value interpret(ostream&  out)=0;
+  virtual void print_tree(ostream& os,string prefix)=0;
+};
 
 
 struct valueNode {
@@ -131,6 +141,7 @@ struct UnaryOP : valueNode {
     Value val = sub->interpret(out);
 
     bool is_Int = holds_alternative<int>(val);
+    bool is_bool = holds_alternative<bool>(val);
    // dbg::line("this is the val: " +is_Int);
     double d_val = as_double(val);
     
@@ -168,6 +179,9 @@ struct UnaryOP : valueNode {
         return -d_val;
 
       }
+      case TOK_NOT: {
+
+      }
       default:
         throw runtime_error("Did not find any valid unary op");
     }
@@ -202,6 +216,7 @@ struct BinaryOP : valueNode {
     Value b = right->interpret(out);
 
     bool bothInt = holds_alternative<int>(a) && holds_alternative<int>(b);
+    bool bothBool = holds_alternative<bool>(a) && holds_alternative<bool>(b);
     double ad = as_double(a);
     double bd = as_double(b);
 
@@ -238,8 +253,60 @@ struct BinaryOP : valueNode {
         return pow(ad,bd);
 
       }
+      case LESSTHAN: {
+        if (a < b)
+        {
+          return true;
+        }
+        return false;
+      }
+      case GREATERTHAN: {
+        if (a > b)
+        {
+          return true;
+        }
+        return false;
+      }
+      case EQUALTO: {
+        if(a == b)
+        {
+          return true;
+        }
+        return false;
+      }
+      case NOTEQUALTO: {
+        if(a != b)
+        {
+          return true;
+        }
+        return false;
+      }
+      case TOK_AND:
+      {
+        if(bothBool)
+        {
+          if(get<bool>(a) && get<bool>(b))
+          {
+            return true;
+          }
+          return false;
+        }
+        throw runtime_error("expresions were not boolean");
+      }
+      case TOK_OR:
+      {
+        if(bothBool)
+        {
+          if(get<bool>(a) || get<bool>(b))
+          {
+            return true;
+          }
+          return false;
+        }
+        throw runtime_error("expresions were not boolean");
+      }
       default:
-        throw runtime_error("Did not find any valid unary op");
+        throw runtime_error("Did not find any valid binary op");
 
     }
 
@@ -254,7 +321,7 @@ struct BinaryOP : valueNode {
 
 
 
-
+// statement structs for: assign, compound, read, write, if, while, and  CUSTOM
 struct Statement
 {
 
@@ -262,6 +329,35 @@ struct Statement
   virtual void print_tree(ostream& os,string prefix)=0;
 
 };
+
+
+struct ifStatment : Statement
+{
+
+
+
+
+};
+
+
+
+struct whileStatement : Statement
+{
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 struct CompoundStatement : Statement
 {
