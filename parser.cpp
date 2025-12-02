@@ -484,7 +484,7 @@ unique_ptr<valueNode> parseValue()
   while(true) {
 
     Token t = peek();
-    cout << "value lex " << peekLex << endl << endl;
+    //cout << "value lex " << peekLex << endl << endl;
     if(t == PLUS || t == MINUS || t == TOK_AND) {
 
       Token op = t;

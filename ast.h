@@ -58,7 +58,7 @@ inline bool truthy(const Value& v)
   
 
 
-  if(abs(val) >= EPSILON)
+  if(1 - fabs(val) >= EPSILON)
   {
     return true;
   }
@@ -202,6 +202,15 @@ struct UnaryOP : valueNode {
       }
       case TOK_NOT: {
 
+        if(truthy(val))
+        {
+          return 1;
+        }
+        else
+        {
+          return 0;
+        }
+
       }
       default:
         throw runtime_error("Did not find any valid unary op");
@@ -308,45 +317,63 @@ struct BinaryOP : valueNode {
       case TOK_AND:
       {
 
-
-        if(bothInt)
+        if(truthy(a) && truthy(b)) //fabs(get<double>(a)) >= EPSILON && fabs(get<double>(b)) >= EPSILON
         {
-          if(get<int>(a) == 1 && get<int>(b) == 1)
-          {
-            return 1;
-          }
-          else
-          {
-            return 0;
-          }
+          return 1;
         }
         else
         {
-          if(abs(get<double>(a)) >= EPSILON && abs(get<double>(b)) >= EPSILON)
-          {
-            return 1;
-          }
-          {
-            return 0;
-          }
+          return 0;
         }
+
+        // if(bothInt)
+        // {
+        //   if() // get<int>(a) == 1 && get<int>(b) == 1
+        //   {
+        //     return 1;
+        //   }
+        //   else
+        //   {
+        //     return 0;
+        //   }
+        // }
+        // else
+        // {
+        //   if(truthy(a) && truthy(b)) //fabs(get<double>(a)) >= EPSILON && fabs(get<double>(b)) >= EPSILON
+        //   {
+        //     return 1;
+        //   }
+        //   {
+        //     return 0;
+        //   }
+        // }
 
         throw runtime_error("expresions were not boolean");
       }
       case TOK_OR:
       {
 
-        if(bothInt)
+        if(truthy(a) || truthy(b))
         {
-          if(get<int>(a) == 1 || get<int>(b) == 1)
-          {
-            return 1;
-          }
-          else
-          {
-            return 0;
-          }
+          return 1;
         }
+        else
+        {
+          return 0;
+
+        }
+
+        // if(bothInt)
+        // {
+        //   if(get<int>(a) == 1 || get<int>(b) == 1)
+        //   {
+        //     return 1;
+        //   }
+        //   else
+        //   {
+        //     return 0;
+        //   }
+        // }
 
         throw runtime_error("expresions were not boolean");
       }
@@ -376,19 +403,19 @@ struct Statement
 };
 
 
-struct expression: valueNode
-{
+// struct expression: valueNode
+// {
 
- // vector<unique_ptr<valueNode>> leftValue;
-  unique_ptr<valueNode> left_value;
-  unique_ptr<valueNode> right_value;
-  Token Operator;
+//  // vector<unique_ptr<valueNode>> leftValue;
+//   unique_ptr<valueNode> left_value;
+//   unique_ptr<valueNode> right_value;
+//   Token Operator;
   
 
 
-  virtual Value interpret(ostream&  out){(void)out;}
-  virtual void print_tree(ostream& os,string prefix){(void)os;(void)prefix;}
-};
+//   virtual Value interpret(ostream&  out){(void)out;}
+//   virtual void print_tree(ostream& os,string prefix){(void)os;(void)prefix;}
+// };
 
 
 struct ifStatment : Statement
@@ -400,9 +427,9 @@ struct ifStatment : Statement
   unique_ptr<Statement> else_statement;
   
 
-  void interpret(ostream& out)
+  void interpret(ostream& out) override
   {
-    (void)out;
+    
 
 
     if((truthy(express->interpret(out))))
@@ -418,10 +445,15 @@ struct ifStatment : Statement
 
   }
 
-  void print_tree(ostream&os,string prefix)
+  void print_tree(ostream&os,string prefix) override
   {
-    (void)os;
-    (void)prefix;
+    ast_line(os,prefix,true,"If");
+    ast_line(os,prefix+"    ",true,"Expresion: ");
+    express->print_tree(os,prefix);
+    ast_line(os,prefix+"    ",true,"statment: ");
+
+
+    if(else_statement) else_statement->print_tree(os,prefix);
   }
 
 
@@ -437,24 +469,28 @@ struct whileStatement : Statement
   unique_ptr<Statement> stmnt;
 
 
-  void interpret(ostream& out)
+  void interpret(ostream& out) override
   {
-    (void)out;
+   
 
 
-    while(express)
+    while(truthy(express->interpret(out)))
     {
       stmnt->interpret(out);
     }
-
-    
-    
+ 
   }
 
-  void print_tree(ostream&os,string prefix)
+  void print_tree(ostream&os,string prefix) override
   {
-    (void)os;
-    (void)prefix;
+
+
+    ast_line(os,prefix,true,"While");
+    ast_line(os,prefix+"    ",true,"Expresion: ");
+    express->print_tree(os,prefix);
+    ast_line(os,prefix+"    ",true,"statment: ");
+    stmnt->print_tree(os,prefix);
+
   }
 };
 
@@ -593,7 +629,7 @@ struct Assign : Statement
 
   void interpret(ostream&out) override
   {
-    (void)out;
+    //(void)out;
 
     auto it = symbolTable.find(id); // finds variable 
 
@@ -607,6 +643,7 @@ struct Assign : Statement
     {
       throw runtime_error("was unable to find value to assign it to new variable");
     }
+
 
 
   }
