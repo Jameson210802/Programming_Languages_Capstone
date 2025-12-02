@@ -70,12 +70,141 @@ unique_ptr<Assign> parseAssign();
 unique_ptr<CompoundStatement> parseCompound();
 unique_ptr<Block> parseBlock();
 unique_ptr<Program> parseProgram();
+unique_ptr<ifStatment> parseIf();
+unique_ptr<whileStatement> parseWhile();
+
+
 unique_ptr<valueNode> parseValue();
 unique_ptr<valueNode> parseTerm();
 unique_ptr<valueNode> parseFactor();
 unique_ptr<valueNode> parsePrimary();
 
+
 //unique_ptr<Declarations> parseDeclarations();
+
+
+unique_ptr<ifStatment> parseIf()
+{
+
+  
+  auto if_node = make_unique<ifStatment>(); // creating if statment node
+
+
+  // expresion
+
+ 
+
+  if(peek() == OPENPAREN)
+  {
+    expect(OPENPAREN,"expect open Parentheses");
+  }
+  else
+  {
+    throw runtime_error("did get paren after while");
+  }
+
+  if_node->expression_values.push_back(parseValue()); // getting value from 
+
+  Token t = peek();
+
+  if(t == LESSTHAN || t == GREATERTHAN || t == EQUALTO || t == NOTEQUALTO)
+  {
+    expect(t,"operation value");
+    if_node->expression_values.push_back(parseValue()); //TODO CHECK and see if you need store token 
+  }
+  
+  if(peek() == CLOSEPAREN)
+  {
+    expect(CLOSEPAREN,"expect open Parentheses");
+  }
+  else
+  {
+    throw runtime_error("did get paren after while");
+  }
+  // expreson done.
+
+  // checking for then
+
+  if(peek() == THEN)
+  {
+    expect(THEN,"Expected THEN");
+  }
+  else
+  {
+    throw runtime_error("Did not recieve THEN");
+  }
+
+
+  if_node->stmnts.push_back(parseStatement());
+
+
+  if(peek() == ELSE) // 
+  {
+    if_node->stmnts.push_back(parseStatement());
+  }
+
+
+
+
+  return if_node;
+
+}
+
+
+unique_ptr<whileStatement> parseWhile()
+{
+
+  auto while_node = make_unique<whileStatement>();
+
+  if(peek() == OPENPAREN)
+  {
+    expect(OPENPAREN,"expect open Parentheses");
+  }
+  else
+  {
+    throw runtime_error("did get paren after while");
+  }
+
+  
+ 
+
+  while_node->expression_values.push_back((parseValue()));
+
+  Token t = peek();
+
+  if(t == LESSTHAN || t == GREATERTHAN || t == EQUALTO || t == NOTEQUALTO)
+  {
+    expect(t,"operation value");
+
+    while_node->expression_values.push_back((parseValue())); //TODO CHECK and see if you need store token 
+  }
+
+
+  
+  if(peek() == CLOSEPAREN)
+  {
+    expect(CLOSEPAREN,"expect open Parentheses");
+  }
+  else
+  {
+    throw runtime_error("did get paren after while");
+  }
+
+  while_node->stmnt = parseStatement();
+
+
+  return while_node;
+
+
+}
+
+
+
+
+
+
+
+
 
 
 unique_ptr<Write> parseWrite()
@@ -253,7 +382,7 @@ unique_ptr<valueNode> parsePrimary()
 unique_ptr<valueNode> parseFactor()
 {
   Token t = peek();
-  if(t==INCREMENT || t == DECREMENT || t == MINUS)
+  if(t==INCREMENT || t == DECREMENT || t == MINUS || t == TOK_NOT)
   {
     Token op = t;
     expect(t,"unary operator (++/--/-) in factor");
@@ -290,7 +419,7 @@ unique_ptr<valueNode> parseTerm()
 
     Token t = peek();
 
-    if (t == MULTIPLY || t == DIVIDE || t == MOD || t == CUSTOM_OPER)
+    if (t == MULTIPLY || t == DIVIDE || t == MOD || t == CUSTOM_OPER || t == TOK_OR)
     {
      
       Token op = t;
@@ -326,7 +455,7 @@ unique_ptr<valueNode> parseValue()
 
     Token t = peek();
 
-    if(t == PLUS || t == MINUS) {
+    if(t == PLUS || t == MINUS || t == TOK_AND) {
 
       Token op = t;
       expect(t, "additive operator (+,-) in Value");
@@ -351,13 +480,8 @@ unique_ptr<valueNode> parseValue()
 
 unique_ptr<Assign> parseAssign()
 {
- // string var_name; 
-  //Token value_type;
-  //int int_val;
-  //double double_val;
-  //cout <<  <<" last line" << last_line;
- 
-  
+
+
   auto a = make_unique<Assign>();
 
   if(peek() != IDENT)
@@ -380,49 +504,12 @@ unique_ptr<Assign> parseAssign()
     throw runtime_error("expected an ASSIGN (:=) after IDENT");
   }
   expect(ASSIGN,"Assign(:=) operator");
-  //Token tok = peek();
-  //a->type = tok;
 
-  
-  // if(tok != INTLIT && tok != FLOATLIT && tok!= IDENT)
-  // {
-  //   throw runtime_error("Expected Either INTLIT or FLOATLIT or IDENT after assign");
-  // }
 
-  //cout << "we are here before a->type" << endl;
-  //  cout << a->type << endl;
-  //cout << "this is the token" << tok << endl;
-  //cout << "we made it before expect " << peekLex << endl; 
- //expect(tok,"Value to be assigned to variable");
-  //a->value = peekLex;
 
-  // while(true)
-  // {
-  //   if(peek() != SEMICOLON || peek() != END){a->rhs = parseValue();}
-  //   else{break;}
-  // }
   a->rhs = parseValue();
 
-  //cout << "we made it past expect " << peekLex << endl;
 
-  //TODO FIGURE OUT HOW TO DO IDENT with assign
-  // auto it = symbolTable.find(a->id);
-  // if(a->type == INTLIT)
-  // {
-  //   int_val = stoi(a->value);
-  //   it->second = int_val;
-  // }
-  // else if (a->type == INTLIT)
-  // {
-  //   double_val = stod(a->value);
-  //   it->second = double_val;
-  // }
-  // else
-  // {
-  //   auto ident_val = symbolTable.find(a->value); // gets the value of the identifier
-
-  //   it->second = ident_val->second; // Sets the variable equal to Identifer VAL := IDENT
-  // }
 
   
 
@@ -462,6 +549,16 @@ unique_ptr<Statement> parseStatement()
     case TOK_BEGIN:
       return parseCompound();  
       break;
+    
+    case IF:
+      expect(IF,"IF token");
+      return parseIf();
+      break;
+
+    case WHILE:
+      expect(WHILE,"while token");
+      return parseWhile();
+      break;
 
     default:
 
@@ -490,13 +587,6 @@ unique_ptr<CompoundStatement> parseCompound()
 
   c->stmts.push_back(parseStatement());
 
-    // if(peek() == SEMICOLON)
-    // {
-    //  //cout << "we are in here" << endl; 
-    //   //throw runtime_error("Started Compound statement without a semicolon");
-    //   expect(SEMICOLON,"SEMICOLON after statment");
-
-    // }
 
    
 
@@ -516,29 +606,6 @@ unique_ptr<CompoundStatement> parseCompound()
     c->stmts.push_back(parseStatement());
 
 
-
-   
-    
-    
-    // if(peek() == READ) // if token is goes to parseRead
-    // {
-    //   expect(READ,"Read token");
-    //   c->stmts.push_back(parseRead());
-    // }
-    // else if (peek() == WRITE) // if token is 
-    // {
-    //   expect(WRITE,"Write token");
-    //   c->stmts.push_back(parseWrite());
-    // }
-    // else if (peek() == IDENT)
-    // {
-    //   c->stmts.push_back(parseAssign());
-    // }
-    
-
-
-
-    
   }while (peek() == SEMICOLON && nextTok());
   
   if(peek() != END)
@@ -552,98 +619,6 @@ unique_ptr<CompoundStatement> parseCompound()
 
 }
 
-
-
-// unique_ptr<CompoundStatement> parseDeclaration()
-// {
-
-//   string previous_name = " ";
-//   if(peek() != IDENT)
-//   {
-//     throw runtime_error("Parser Error: expected IDENT after VAR");
-//   }
-
-//   string current_name = peekLex;
-
-//   if()
-//   expect(IDENT,"Var Identifier");
-
-  
-
-
-
-
-// }
-
-
-// unique_ptr<Declarations> parseDeclarations()
-// {
-//   auto d = make_unique<Declarations>();
-
-//   bool var_list = true;
-
-//   if(peek()!= VAR)
-//   {
-//     throw runtime_error("expected VAR after IDENT since there was no BEGIN");
-//   }
-//   expect(VAR,"Variable declaratons");
-
-//   while(var_list)
-//   {
-   
-//     if(peek() != IDENT){throw runtime_error("Expected IDENT after VAR");}
-
-
-//     expect(IDENT,"variable name");
-
-//     d->name = peekLex; // stoes the name of the variable. 
-   
-    
-//     if(peek() != COLON){throw runtime_error("Expected colon (:) after IDENT");}
-
-//     expect(COLON,"Colon");
-
-//     d->type = peek(); // stores the token type. 
-//     //std::cout << peekLex << std::endl;
-
-//     if(d->type != INTEGER && d->type != REAL) // if the variable is neither a INTERGER or a REAL number it errors out. 
-//     {
-//       throw runtime_error("Expected INTEGER or REAL after COLON (:)");
-//     } 
-//     expect(d->type,"Value of intialized variable");
-
-//     //cout << peekLex << endl;
-//     if(peek() != SEMICOLON){throw runtime_error("Expected a SEMICOLON(;) after variable type");} //errors out if no SEMICOLON
-
-//     expect(SEMICOLON,"SEMICOLON after variable type");
-
-//     // auto it = symbolTable.find(var_name);
-
-//     // if(it!= symbolTable.end())
-//     // {
-//     //   throw runtime_error("duplicate");
-//     // }
-
-//     // if(var_type == INTEGER)
-//     // {
-//     //   symbolTable[var_name] = 0;
-//     // }
-//     // else
-//     // {
-//     //   symbolTable[var_name] = 0.0;
-//     // }
-
-//     //std::cout << "right before IDENT at the end " << peekLex << std::endl;
-//     if(peek()!= IDENT)
-//     {
-//       var_list = false;
-//     }
-
-//   }
-
-//   return d;
-
-// }
 
 
 

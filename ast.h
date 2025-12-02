@@ -141,7 +141,7 @@ struct UnaryOP : valueNode {
     Value val = sub->interpret(out);
 
     bool is_Int = holds_alternative<int>(val);
-    bool is_bool = holds_alternative<bool>(val);
+   // bool is_bool = holds_alternative<bool>(val);
    // dbg::line("this is the val: " +is_Int);
     double d_val = as_double(val);
     
@@ -216,7 +216,9 @@ struct BinaryOP : valueNode {
     Value b = right->interpret(out);
 
     bool bothInt = holds_alternative<int>(a) && holds_alternative<int>(b);
-    bool bothBool = holds_alternative<bool>(a) && holds_alternative<bool>(b);
+
+   // bool bothBool = holds_alternative<bool>(a) && holds_alternative<bool>(b); 
+
     double ad = as_double(a);
     double bd = as_double(b);
 
@@ -254,55 +256,77 @@ struct BinaryOP : valueNode {
 
       }
       case LESSTHAN: {
+
         if (a < b)
         {
-          return true;
+          return 1;
         }
-        return false;
+        return 0;
       }
       case GREATERTHAN: {
         if (a > b)
         {
-          return true;
+          return 1;
         }
-        return false;
+        return 0;
       }
       case EQUALTO: {
         if(a == b)
         {
-          return true;
+          return 1;
         }
-        return false;
+        return 0;
       }
       case NOTEQUALTO: {
         if(a != b)
         {
-          return true;
+          return 1;
         }
-        return false;
+        return 0;
       }
       case TOK_AND:
       {
-        if(bothBool)
+
+
+        if(bothInt)
         {
-          if(get<bool>(a) && get<bool>(b))
+          if(get<int>(a) == 1 && get<int>(b) == 1)
           {
-            return true;
+            return 1;
           }
-          return false;
+          else
+          {
+            return 0;
+          }
         }
+        else
+        {
+          if(abs(get<double>(a)) >= EPSILON && abs(get<double>(b)) >= EPSILON)
+          {
+            return 1;
+          }
+          {
+            return 0;
+          }
+        }
+
         throw runtime_error("expresions were not boolean");
       }
       case TOK_OR:
       {
-        if(bothBool)
+
+        if(bothInt)
         {
-          if(get<bool>(a) || get<bool>(b))
+          if(get<int>(a) == 1 || get<int>(b) == 1)
           {
-            return true;
+            return 1;
           }
-          return false;
+          else
+          {
+            return 0;
+          }
         }
+
         throw runtime_error("expresions were not boolean");
       }
       default:
@@ -331,9 +355,30 @@ struct Statement
 };
 
 
+struct expresion : Statement
+{
+
+};
+
+
 struct ifStatment : Statement
 {
 
+  
+  vector<unique_ptr<valueNode>> expression_values;
+  vector<unique_ptr<Statement>> stmnts;
+  
+
+  void interpret(ostream& out)
+  {
+    (void)out;
+  }
+
+  void print_tree(ostream&os,string prefix)
+  {
+    (void)os;
+    (void)prefix;
+  }
 
 
 
@@ -344,6 +389,20 @@ struct ifStatment : Statement
 struct whileStatement : Statement
 {
 
+  vector<unique_ptr<valueNode>> expression_values;
+  unique_ptr<Statement> stmnt;
+
+
+  void interpret(ostream& out)
+  {
+    (void)out;
+  }
+
+  void print_tree(ostream&os,string prefix)
+  {
+    (void)os;
+    (void)prefix;
+  }
 };
 
 

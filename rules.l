@@ -16,6 +16,7 @@
 
 PROGRAM        {return PROGRAM;}
 [\t\r\n]+            {        }
+"##".*          {        }
 
 " "                 {   }
 VAR               {return VAR;}
@@ -49,7 +50,7 @@ WHILE          {return WHILE;}
 
 SENIORITIS    {return CUSTOM;}
 
-\#\#          {             }
+
 
 
 
