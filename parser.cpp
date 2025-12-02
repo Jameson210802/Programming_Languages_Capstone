@@ -72,7 +72,8 @@ unique_ptr<Block> parseBlock();
 unique_ptr<Program> parseProgram();
 unique_ptr<ifStatment> parseIf();
 unique_ptr<whileStatement> parseWhile();
-unique_ptr<expression> parseExpression();
+unique_ptr<valueNode> parseExpression();
+unique_ptr<senior> parseSenior();
 
 
 unique_ptr<valueNode> parseValue();
@@ -83,19 +84,25 @@ unique_ptr<valueNode> parsePrimary();
 
 //unique_ptr<Declarations> parseDeclarations();
 
+unique_ptr<senior> parseSenior()
+{
 
-unique_ptr<expression> parseExpression()
+  auto node = make_unique<senior>();
+
+  return node;
+
+}
+
+unique_ptr<valueNode> parseExpression()
 {
  
-  auto node = make_unique<expression>();
+  auto node = parseValue();
 
 
-  node->value.push_back(parseValue()); // gets left node;
 
-  if(peek() == CLOSEPAREN)
-  {
-    expect(CLOSEPAREN,"expected open paren");
-  }
+
+
+
  
 
   Token t = peek();
@@ -103,82 +110,28 @@ unique_ptr<expression> parseExpression()
   if(t == LESSTHAN || t == GREATERTHAN || t == EQUALTO || t == NOTEQUALTO) // checks to see if there is a right side to the expresion 
   {
 
-    node->relationOperator = t;
+    //node->Operator = t;
+
+    Token op = t;
+
     expect(t,"operation value");
 
-    node->value.push_back(parseValue());
-    if(peek() == CLOSEPAREN)
-    {
-      expect(CLOSEPAREN,"expected open paren");
-    }
-  }
+    //node->right_value=parseValue();
+   
+    auto rhs = parseValue();
 
+    auto bin = make_unique<BinaryOP>();
 
-  t = peek();
-
-  if(t == TOK_AND || t == TOK_OR)
-  {
-    node->logicalOperator = t;
-
-    node->value.push_back(parseExpression());
-  }
-
-
-
-  
-
-  
-
-
-
-  // /// LEFT NODE ONLY THING CALLED IF THAT IS IT
-  // cout << "THIS IS TOKEN left val " << peekLex << endl << endl;
-  // node->leftValue.push_back(parseValue()); 
-
-
-  // if(peek() == CLOSEPAREN) // closes parentheses if there
-  // {
-  //   expect(CLOSEPAREN,"expect close Parentheses");
-  // }
-
-
-
-
-
-
-  // Token t = peek(); // checks to see if there is a relational operator
-
-  // cout << "THIS IS TOKEN right val " << peekLex << endl << endl;
-
-
-  // if(t == LESSTHAN || t == GREATERTHAN || t == EQUALTO || t == NOTEQUALTO) // checks to see if there is a right side to the expresion 
-  // {
-  //   expect(t,"operation value");
-
+    bin->op = op;
+    bin->left = move(node);
+    bin->right = move(rhs);
+    node = move(bin);
     
- 
-  //  node->rightValue.push_back(parseValue());
-  // }
 
-  // if(peek() == CLOSEPAREN)
-  // {
-  //   expect(CLOSEPAREN,"expect close Parentheses");
-  // }
+  }
 
-  // t = peek();
-  // cout << "THIS IS TOKEN AND / OR val " << peekLex << endl << endl;
-  // if(t == TOK_AND || t == TOK_OR)
-  // {
 
-  //   node->rightValue.push_back(parseExpression());
 
-  // }
-
-  // if(peek() == CLOSEPAREN)
-  // {
-  //   expect(CLOSEPAREN,"expect close Parentheses");
-  // }
-  
  
   return node;
   
@@ -193,46 +146,12 @@ unique_ptr<ifStatment> parseIf()
   auto if_node = make_unique<ifStatment>(); // creating if statment node
 
 
-  // expresion
-
- 
-
-  if(peek() == OPENPAREN)
-  {
-    expect(OPENPAREN,"expect open Parentheses");
-  }
-  else
-  {
-    throw runtime_error("did not get paren after while");
-  }
 
 
   if_node->express = parseExpression();
 
   
 
-
-  // if_node->expression_values.push_back(parseValue()); // getting value from 
-
-  // Token t = peek();
-
-  // if(t == LESSTHAN || t == GREATERTHAN || t == EQUALTO || t == NOTEQUALTO)
-  // {
-  //   expect(t,"operation value");
-  //   if_node->expression_values.push_back(parseValue()); //TODO CHECK and see if you need store token 
-  // }
-
-  // if(peek() == CLOSEPAREN)
-  // {
-  //   expect(CLOSEPAREN,"expect open Parentheses");
-  // }
-  // else
-  // {
-  //   throw runtime_error("did get paren after while");
-  // }
-  // expreson done.
-
-  // checking for then
 
   if(peek() == THEN)
   {
@@ -244,14 +163,13 @@ unique_ptr<ifStatment> parseIf()
   }
 
 
-  cout << "WE ARE HERE" << endl;
-
-  if_node->stmnts.push_back(parseStatement());
+  if_node->statment = parseStatement();
 
 
   if(peek() == ELSE) // 
   {
-    if_node->stmnts.push_back(parseStatement());
+    expect(ELSE,"expected else");
+    if_node->else_statement = parseStatement();
   }
 
 
@@ -267,14 +185,14 @@ unique_ptr<whileStatement> parseWhile()
 
   auto while_node = make_unique<whileStatement>();
 
-  if(peek() == OPENPAREN)
-  {
-    expect(OPENPAREN,"expect open Parentheses");
-  }
-  else
-  {
-    throw runtime_error("did get paren after while");
-  }
+  // if(peek() == OPENPAREN)
+  // {
+  //   expect(OPENPAREN,"expect open Parentheses");
+  // }
+  // else
+  // {
+  //   throw runtime_error("did get paren after while");
+  // }
 
   
   while_node->express = parseExpression();
@@ -467,7 +385,7 @@ unique_ptr<valueNode> parsePrimary()
   {
     expect(t,"Open Parentheses in Primary");
     
-    auto node = parseValue();
+    auto node = parseExpression();
     
     t = peek();
 
@@ -670,6 +588,14 @@ unique_ptr<Statement> parseStatement()
     case WHILE:
       expect(WHILE,"while token");
       return parseWhile();
+      break;
+    case CUSTOM:
+      expect(CUSTOM,"CUSTOM Token");
+
+      return parseSenior();
+
+      
+
       break;
 
     default:

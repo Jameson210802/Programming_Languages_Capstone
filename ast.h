@@ -18,6 +18,10 @@
 #include <vector>
 #include <cmath>
 
+#include <unistd.h>
+#include <fstream>
+#include <ctime>
+
 using namespace std;
 
 // note got the holds_alternative  from: https://www.geeksforgeeks.org/cpp/std-variant-in-cpp-17/
@@ -35,6 +39,9 @@ using Value = variant<int,double>;
 
 const double EPSILON = 0.00001;
 
+
+
+
 inline double as_double(const Value& v){
   return holds_alternative<int>(v) ? static_cast<double>(get<int>(v)) : get<double>(v);
 }
@@ -44,7 +51,21 @@ inline int as_int_strict(const Value& v){
   return get<int>(v);
 }
 
+inline bool truthy(const Value& v)
+{
+  
+  double val = as_double(v);
+  
 
+
+  if(abs(val) >= EPSILON)
+  {
+    return true;
+  }
+
+
+  return false;
+}
 
 
 // struct expression {
@@ -359,9 +380,10 @@ struct expression: valueNode
 {
 
  // vector<unique_ptr<valueNode>> leftValue;
-  vector<unique_ptr<valueNode>> value;
-  Token relationOperator;
-  Token logicalOperator;
+  unique_ptr<valueNode> left_value;
+  unique_ptr<valueNode> right_value;
+  Token Operator;
+  
 
 
   virtual Value interpret(ostream&  out){(void)out;}
@@ -373,13 +395,27 @@ struct ifStatment : Statement
 {
 
   
-  unique_ptr<expression> express;
-  vector<unique_ptr<Statement>> stmnts;
+  unique_ptr<valueNode> express;
+  unique_ptr<Statement> statment;
+  unique_ptr<Statement> else_statement;
   
 
   void interpret(ostream& out)
   {
     (void)out;
+
+
+    if((truthy(express->interpret(out))))
+    {
+      statment->interpret(out);
+    }
+    else if(else_statement)
+    {
+      else_statement->interpret(out);
+    }
+
+
+
   }
 
   void print_tree(ostream&os,string prefix)
@@ -397,13 +433,22 @@ struct ifStatment : Statement
 struct whileStatement : Statement
 {
 
-  unique_ptr<expression> express;
+  unique_ptr<valueNode> express;
   unique_ptr<Statement> stmnt;
 
 
   void interpret(ostream& out)
   {
     (void)out;
+
+
+    while(express)
+    {
+      stmnt->interpret(out);
+    }
+
+    
+    
   }
 
   void print_tree(ostream&os,string prefix)
@@ -413,6 +458,57 @@ struct whileStatement : Statement
   }
 };
 
+
+
+
+
+struct senior : Statement
+{
+
+
+
+  void print_tree(ostream& os,string prefix) override
+  {
+    (void) os;
+    (void)prefix;
+    // //TODO fill in to print tree later
+    // ast_line(os,prefix+"   ",true,"Compound Statement");
+    // for (auto& s: stmts) s->print_tree(os,"\t"+ prefix);
+  }
+
+  void interpret(ostream& out) override
+  {
+
+    //srand(time(0));
+
+    
+    // ifstream grandpa("grandpa.txt");
+    // string line;
+
+   // int time_sleep = rand() % 20;
+
+
+    out << "It is time to hibernate" << endl;
+
+    //sleep(2);
+
+    // while(getline(grandpa,line))
+    // {
+    //   cout << line;
+    // }
+    // grandpa.close();
+
+
+    // sleep(time_sleep);
+
+
+
+
+   
+  }
+
+
+};
 
 
 
@@ -439,7 +535,9 @@ struct CompoundStatement : Statement
   }
 
   void interpret(ostream& out) override{
-    for(auto& s: stmts) s->interpret(out); }
+
+    for(auto& s: stmts) s->interpret(out); 
+  }
 };
 
 
