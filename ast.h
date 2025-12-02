@@ -47,11 +47,11 @@ inline int as_int_strict(const Value& v){
 
 
 
-struct expression {
+// struct expression {
 
-  virtual Value interpret(ostream&  out)=0;
-  virtual void print_tree(ostream& os,string prefix)=0;
-};
+//   virtual Value interpret(ostream&  out)=0;
+//   virtual void print_tree(ostream& os,string prefix)=0;
+// };
 
 
 struct valueNode {
@@ -355,9 +355,17 @@ struct Statement
 };
 
 
-struct expresion : Statement
+struct expression: valueNode
 {
 
+ // vector<unique_ptr<valueNode>> leftValue;
+  vector<unique_ptr<valueNode>> value;
+  Token relationOperator;
+  Token logicalOperator;
+
+
+  virtual Value interpret(ostream&  out){(void)out;}
+  virtual void print_tree(ostream& os,string prefix){(void)os;(void)prefix;}
 };
 
 
@@ -365,7 +373,7 @@ struct ifStatment : Statement
 {
 
   
-  vector<unique_ptr<valueNode>> expression_values;
+  unique_ptr<expression> express;
   vector<unique_ptr<Statement>> stmnts;
   
 
@@ -389,7 +397,7 @@ struct ifStatment : Statement
 struct whileStatement : Statement
 {
 
-  vector<unique_ptr<valueNode>> expression_values;
+  unique_ptr<expression> express;
   unique_ptr<Statement> stmnt;
 
 
