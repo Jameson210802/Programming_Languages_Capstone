@@ -562,7 +562,7 @@ struct senior : Statement
 
     while(getline(grandpa,line))
     {
-      out << line << endl;
+      out << "\033[36m"  << line <<"\033[0m" << endl;
     }
     grandpa.close();
 

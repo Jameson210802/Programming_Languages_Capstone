@@ -4,7 +4,7 @@ VAR
   LIKE    : INTEGER;
 BEGIN
 
-
+    ## asking user for input
   WRITE('Do you like to code? (yes=1/no=0)');
   READ(LIKE);
 
@@ -15,11 +15,13 @@ BEGIN
   WRITE(LIKE);
   
 
-
+  ## While loop based on the amount of coders
  WHILE(CODERS > 0)
     BEGIN
       WRITE('This many coders remain:');
       WRITE(CODERS);
+
+      ## prints out text based on the amount of coders and if the user liked programming
 
       IF (CODERS = 1) AND (LIKE = 0) THEN
         BEGIN
@@ -36,6 +38,8 @@ BEGIN
       CODERS := CODERS - 1
     END;
       
+
+  ## prints out correct answer 
     
   WRITE('The correct answer was..');
   WRITE('Coders do not screw in lightbulbs since they do not like hardware')
