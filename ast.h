@@ -17,7 +17,7 @@
 #include <variant>
 #include <vector>
 #include <cmath>
-
+#include <fcntl.h>
 #include <unistd.h>
 #include <fstream>
 #include <ctime>
@@ -44,6 +44,10 @@ const double EPSILON = 0.00001;
 
 inline double as_double(const Value& v){
   return holds_alternative<int>(v) ? static_cast<double>(get<int>(v)) : get<double>(v);
+}
+
+inline double as_int(const Value& v){
+  return holds_alternative<double>(v) ? static_cast<int>(get<double>(v)) : get<int>(v);
 }
 
 inline int as_int_strict(const Value& v){
@@ -267,6 +271,7 @@ struct BinaryOP : valueNode {
         return ad * bd;
       }
       case DIVIDE: {
+
         return ad / bd;
       }
       case MOD:{
@@ -274,6 +279,11 @@ struct BinaryOP : valueNode {
         // if (bothInt){return get<int>(a) % get<int>(b);}
         int ai = as_int_strict(a);
         int bi = as_int_strict(b);
+
+        // int ai = as_int(a);
+        // int bi = as_int(b);
+
+
         if(bi == 0){throw runtime_error("can not divide by zero");}
        // return as_int_strict(a) % as_int_strict(b);
        return ai % bi;
@@ -289,6 +299,7 @@ struct BinaryOP : valueNode {
 
         if (a < b)
         {
+    
           return 1;
         }
         return 0;
@@ -303,7 +314,10 @@ struct BinaryOP : valueNode {
       case EQUALTO: {
         if(a == b)
         {
+          //printf("HERE are the two variables, %lf,%lf\n",as_double(a),as_double(b));
+          //dbg::line(string("HERE are the two variables, %lf,%lf\n",as_double(a),as_double(b)));
           return 1;
+      
         }
         return 0;
       }

@@ -263,7 +263,7 @@ unique_ptr<Write> parseWrite()
 
     if(confirm == symbolTable.end())
     {
-    throw runtime_error("IDENT was not declared to WRITE to");
+      throw runtime_error("IDENT was not declared to WRITE to");
     }
   }
   
@@ -362,7 +362,7 @@ unique_ptr<valueNode> parsePrimary()
 
     expect(t,"INTLIT in primary");
 
-    auto node = make_unique<RealLitNode>();
+    auto node = make_unique<IntLitNode>();
 
     node->v = stoi(peekLex);
     
