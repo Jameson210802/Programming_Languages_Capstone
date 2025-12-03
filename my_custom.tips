@@ -1,0 +1,44 @@
+PROGRAM CODING;
+VAR
+  CODERS  : INTEGER;
+  LIKE    : INTEGER;
+BEGIN
+
+
+  WRITE('Do you like to code? (yes=1/no=0)');
+  READ(LIKE);
+
+  WRITE('How many coders does it take to screw in a light bulb?');
+  READ(CODERS);
+
+  WRITE(CODERS);
+  WRITE(LIKE);
+  
+
+
+ WHILE(CODERS > 0)
+    BEGIN
+      WRITE('This many coders remain:');
+      WRITE(CODERS);
+
+      IF (CODERS = 1) AND (LIKE = 0) THEN
+        BEGIN
+          WRITE('You are infact not THE Programer.');
+          WRITE('Goodbye fake coder.')
+        END;
+    
+      IF (CODERS = 1) AND (LIKE = 1) THEN
+        BEGIN
+          WRITE('You are THE last coder standing. Enjoy your sleep.');
+          SENIORITIS
+        END;
+    
+      CODERS := CODERS - 1
+    END;
+      
+    
+  WRITE('The correct answer was..');
+  WRITE('Coders do not screw in lightbulbs since they do not like hardware')
+
+
+END

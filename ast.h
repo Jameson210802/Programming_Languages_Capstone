@@ -17,10 +17,12 @@
 #include <variant>
 #include <vector>
 #include <cmath>
-#include <fcntl.h>
-#include <unistd.h>
+
 #include <fstream>
 #include <ctime>
+#include <chrono>
+#include <thread>
+#include <unistd.h>
 
 using namespace std;
 
@@ -55,6 +57,22 @@ inline int as_int_strict(const Value& v){
   return get<int>(v);
 }
 
+// inline string get_time() //source: https://www.geeksforgeeks.org/cpp/how-to-make-a-countdown-timer-in-cpp/
+// {
+
+//   time_t current_time;
+//   struct tm* local_time;
+
+//   time(&current_time);
+
+
+//   local_time = localtime(&current_time);
+
+//   return asctime(local_time);
+
+// }
+
+
 inline bool truthy(const Value& v)
 {
   
@@ -62,7 +80,7 @@ inline bool truthy(const Value& v)
   
 
 
-  if(1 - fabs(val) >= EPSILON)
+  if(fabs(val) >= EPSILON)
   {
     return true;
   }
@@ -526,31 +544,43 @@ struct senior : Statement
     // for (auto& s: stmts) s->print_tree(os,"\t"+ prefix);
   }
 
-  void interpret(ostream& out) override
+  void interpret(ostream& out) override // source of counter: https://www.geeksforgeeks.org/cpp/how-to-make-a-countdown-timer-in-cpp/
   {
 
-    //srand(time(0));
+    srand(time(0));
 
     
-    // ifstream grandpa("grandpa.txt");
-    // string line;
+    ifstream grandpa("grandpa.txt");
+    string line;
 
-   // int time_sleep = rand() % 20;
+   int time_sleep = rand() % 15;
 
 
     out << "It is time to hibernate" << endl;
 
-    //sleep(2);
+    this_thread::sleep_for(chrono::seconds(2));
 
-    // while(getline(grandpa,line))
-    // {
-    //   cout << line;
-    // }
-    // grandpa.close();
+    while(getline(grandpa,line))
+    {
+      out << line << endl;
+    }
+    grandpa.close();
 
 
-    // sleep(time_sleep);
+    //sleep(time_sleep);
 
+    while(time_sleep >=1)
+    {
+      out << "\rWait! Grandpa is still sleeping for " << time_sleep << " seconds." << std::flush;
+
+      this_thread::sleep_for(chrono::seconds(1));
+      
+      time_sleep--;
+    }
+
+
+    out << endl;
+    out << "Grandpa is awake now!" << endl;
 
 
 
